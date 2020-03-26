@@ -234,7 +234,8 @@ class tokenList:
 			# Schedule a new check (endless loop)
 			threading.Timer(10, self.spamProtectionResetLoop).start()
 
-	def deleteBanchoSessions(self):
+	@staticmethod
+	def deleteBanchoSessions():
 		"""
 		Remove all `peppy:sessions:*` redis keys.
 		Call at bancho startup to delete old cached sessions

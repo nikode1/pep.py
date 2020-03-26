@@ -49,7 +49,8 @@ class banchoConfig:
 		self.config["banchoMaintenance"] = maintenance
 		glob.db.execute("UPDATE bancho_settings SET value_int = %s WHERE name = 'bancho_maintenance'", [int(maintenance)])
 
-	def reload(self):
+	@staticmethod
+	def reload():
 		# Reload settings from bancho_settings
 		glob.banchoConf.loadSettings()
 
