@@ -5,8 +5,6 @@ from common.log import logUtils as log
 from constants import clientPackets
 from constants import matchModModes
 from constants import matchTeamTypes
-from constants import matchTeams
-from constants import slotStatuses
 from objects import glob
 
 

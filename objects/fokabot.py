@@ -1,7 +1,5 @@
 """FokaBot related functions"""
 import re
-
-from common import generalUtils
 from common.constants import actions
 from common.ripple import userUtils
 from constants import fokabotCommands
