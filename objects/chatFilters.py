@@ -29,7 +29,8 @@ class chatFilters:
 				lineSplit = line.split("=")
 				self.filters[lineSplit[0].lower()] = lineSplit[1].replace("\n", "")
 
-	def filterMessage(self, message):
+	@staticmethod
+	def filterMessage(message):
 		"""
 		Replace forbidden words with filtered ones
 
