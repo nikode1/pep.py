@@ -428,7 +428,8 @@ def getPPMessage(userID, just_data = False):
 		url = "{}/v1/pp?b={}&m={}".format(glob.conf.config["server"]["letsapiurl"].rstrip("/"), currentMap, currentMods)
 		resp = requests.get(url, timeout=10)
 		try:
-			assert resp is not None
+			if resp is None:
+				raise AssertionError
 			data = json.loads(resp.text)
 		except (json.JSONDecodeError, AssertionError):
 			raise exceptions.apiException()
