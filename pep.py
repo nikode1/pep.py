@@ -27,7 +27,6 @@ from handlers import apiServerStatusHandler
 from handlers import apiVerifiedStatusHandler
 from handlers import ciTriggerHandler
 from handlers import mainHandler
-from handlers import heavyHandler
 from helpers import configHelper
 from helpers import consoleHelper
 from helpers import systemHelper as system
