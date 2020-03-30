@@ -1,5 +1,3 @@
-import json
-
 import tornado.web
 import tornado.gen
 
