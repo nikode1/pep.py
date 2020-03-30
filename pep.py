@@ -220,12 +220,6 @@ if __name__ == "__main__":
 		if not glob.localize:
 			consoleHelper.printColored("[!] Warning! Users localization is disabled!", bcolors.YELLOW)
 
-		# Discord
-		if generalUtils.stringToBool(glob.conf.config["discord"]["enable"]):
-			glob.schiavo = schiavo.schiavo(glob.conf.config["discord"]["boturl"], "**pep.py**")
-		else:
-			consoleHelper.printColored("[!] Warning! Discord logging is disabled!", bcolors.YELLOW)
-
 		# Gzip
 		glob.gzip = generalUtils.stringToBool(glob.conf.config["server"]["gzip"])
 		glob.gziplevel = int(glob.conf.config["server"]["gziplevel"])
