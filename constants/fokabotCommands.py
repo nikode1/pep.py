@@ -1346,17 +1346,19 @@ def editMap(fro, chan, message): # Using Atoka's editMap with Aoba's edit
 
 		chat.sendMessage(glob.BOT_NAME, "#announce", msg)
 		
-		if mapType == "set":
-			webhookdesp = "{} (set) has been {} by {}".format(beatmapData["song_name"], status, name)
-		else:
-			webhookdesp = "{} has been {} by {}".format(beatmapData["song_name"], status, name)
+		if glob.conf.config["discord"]["enable"] == True:
+			if mapType == "set":
+				webhookdesp = "{} (set) has been {} by {}".format(beatmapData["song_name"], status, name)
+			else:
+				webhookdesp = "{} has been {} by {}".format(beatmapData["song_name"], status, name)
 
-		webhook = aobaHelper.Webhook(glob.conf.config["discord"]["ranked"], color=0xadd8e6, footer="This beatmap was {} on osu!Ainu".format(status))
-		webhook.set_author(name=name, icon='https://a.ainu.pw/{}'.format(str(userID)), url="https://ainu.pw/u/{}".format(str(userID)))
-		webhook.set_title(title="New {} map!".format(status), url='https://osu.ppy.sh/s/{}'.format(str(beatmapData["beatmapset_id"])))
-		webhook.set_desc(webhookdesp)
-		webhook.set_image("https://assets.ppy.sh/beatmaps/{}/covers/cover.jpg".format(str(beatmapData["beatmapset_id"])))
-		webhook.post()
+			webhook = aobaHelper.Webhook(glob.conf.config["discord"]["ranked"], color=0xadd8e6, footer="This beatmap was {} on osu!Ainu".format(status))
+			webhook.set_author(name=name, icon='https://a.ainu.pw/{}'.format(str(userID)), url="https://ainu.pw/u/{}".format(str(userID)))
+			webhook.set_title(title="New {} map!".format(status), url='https://osu.ppy.sh/s/{}'.format(str(beatmapData["beatmapset_id"])))
+			webhook.set_desc(webhookdesp)
+			webhook.set_image("https://assets.ppy.sh/beatmaps/{}/covers/cover.jpg".format(str(beatmapData["beatmapset_id"])))
+			webhook.post()
+
 		return msg
 
 def postAnnouncement(fro, chan, message): # Post to #announce ingame
@@ -1365,11 +1367,12 @@ def postAnnouncement(fro, chan, message): # Post to #announce ingame
 	userID = userUtils.getID(fro)
 	name = userUtils.getUsername(userID)
 
-	webhook = aobaHelper.Webhook(glob.conf.config["discord"]["announcement"], color=0xadd8e6, footer="This announcement was posted in-game")
-	webhook.set_author(name=name, icon='https://a.ainu.pw/{}'.format(str(userID)), url="https://ainu.pw/u/{}".format(str(userID)))
-	webhook.set_title(title="=-= ANNOUNCEMENT =-=")
-	webhook.set_desc(announcement)
-	webhook.post()
+	if glob.conf.config["discord"]["enable"] == True:
+		webhook = aobaHelper.Webhook(glob.conf.config["discord"]["announcement"], color=0xadd8e6, footer="This announcement was posted in-game")
+		webhook.set_author(name=name, icon='https://a.ainu.pw/{}'.format(str(userID)), url="https://ainu.pw/u/{}".format(str(userID)))
+		webhook.set_title(title="=-= ANNOUNCEMENT =-=")
+		webhook.set_desc(announcement)
+		webhook.post()
 
 	return "Announcement successfully sent."
 
