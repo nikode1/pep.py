@@ -20,14 +20,13 @@ from common.log import logUtils as log
 from common.redis import pubSub
 from common.web import schiavo
 from handlers import apiFokabotMessageHandler
-from handlers import apiGetTheFuckOuttaHere
+from handlers import apiDeltaClients
 from handlers import apiIsOnlineHandler
 from handlers import apiOnlineUsersHandler
 from handlers import apiServerStatusHandler
 from handlers import apiVerifiedStatusHandler
 from handlers import ciTriggerHandler
 from handlers import mainHandler
-from handlers import heavyHandler
 from helpers import configHelper
 from helpers import consoleHelper
 from helpers import systemHelper as system
@@ -54,8 +53,7 @@ def make_app():
 		(r"/api/v1/ciTrigger", ciTriggerHandler.handler),
 		(r"/api/v1/verifiedStatus", apiVerifiedStatusHandler.handler),
 		(r"/api/v1/fokabotMessage", apiFokabotMessageHandler.handler),
-		(r"/api/v2/clients/.*", apiGetTheFuckOuttaHere.handler),
-		(r"/stress", heavyHandler.handler)
+		(r"/api/v2/clients/.*", apiDeltaClients.handler)
 	])
 
 
@@ -221,12 +219,6 @@ if __name__ == "__main__":
 		glob.localize = generalUtils.stringToBool(glob.conf.config["localize"]["enable"])
 		if not glob.localize:
 			consoleHelper.printColored("[!] Warning! Users localization is disabled!", bcolors.YELLOW)
-
-		# Discord
-		if generalUtils.stringToBool(glob.conf.config["discord"]["enable"]):
-			glob.schiavo = schiavo.schiavo(glob.conf.config["discord"]["boturl"], "**pep.py**")
-		else:
-			consoleHelper.printColored("[!] Warning! Discord logging is disabled!", bcolors.YELLOW)
 
 		# Gzip
 		glob.gzip = generalUtils.stringToBool(glob.conf.config["server"]["gzip"])
