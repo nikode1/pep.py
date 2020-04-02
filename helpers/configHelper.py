@@ -73,6 +73,7 @@ class config:
 			parsedConfig.get("sentry", "ircdsn")
 
 			parsedConfig.get("discord", "enable")
+			parsedConfig.get("discord", "anticheat")
 			parsedConfig.get("discord", "ranked")
 			parsedConfig.get("discord", "announcement")
 
@@ -141,6 +142,7 @@ class config:
 
 		self.config.add_section("discord")
 		self.config.set("discord", "enable", "0")
+		self.config.set("discord", "anticheat", "")
 		self.config.set("discord", "ranked", "")
 		self.config.set("discord", "announcement", "")
 

@@ -80,12 +80,12 @@ def handle(tornadoRequest):
 		if priv & privileges.USER_PENDING_VERIFICATION > 0 or not userUtils.hasVerifiedHardware(userID):
 			if userUtils.verifyUser(userID, clientData):
 				# Valid account
-				log.info("Account {} verified successfully!".format(userID))
+				log.info("Account ID {} verified successfully!".format(userID))
 				glob.verifiedCache[str(userID)] = 1
 				firstLogin = True
 			else:
 				# Multiaccount detected
-				log.info("Account {} NOT verified!".format(userID))
+				log.info("Account ID {} NOT verified!".format(userID))
 				glob.verifiedCache[str(userID)] = 0
 				raise exceptions.loginBannedException()
 
@@ -172,30 +172,68 @@ def handle(tornadoRequest):
 		if glob.conf.extra["mode"]["anticheat"]:
 			# Ainu Client 2020 update
 			if tornadoRequest.request.headers.get("ainu") == "happy":
-				log.info("Account {} tried to use Ainu Client 2020!".format(userID))
+				log.info("Account ID {} tried to use Ainu Client 2020!".format(userID))
 				if userUtils.isRestricted(userID):
 					responseToken.enqueue(serverPackets.notification("You're banned because you're currently using Ainu Client... Happy New Year 2020 and Enjoy your restriction :)"))
+					#if glob.conf.config["discord"]["enable"] == True:
+					webhook = aobaHelper.Webhook(glob.conf.config["discord"]["anticheat"],color=0xadd8e6,footer="Man... this is worst player. [ Login Gate AC ]")
+					webhook.set_title(title="Catched some cheater Account ID {}".format(userID))
+					webhook.set_desc(f' tried to use Ainu Client 2020!')
+					log.info("Sent to webhook {} DONE!!".format(glob.conf.config["discord"]["enable"]))
+					aobaHelper.Webhook.post()
 				else:
 					glob.tokens.deleteToken(userID)
 					userUtils.restrict(userID)
+					#if glob.conf.config["discord"]["enable"] == True:
+					webhook = aobaHelper.Webhook(glob.conf.config["discord"]["anticheat"],color=0xadd8e6,footer="Man... this is worst player. [ Login Gate AC ]")
+					webhook.set_title(title="Catched some cheater Account ID {}".format(userID))
+					webhook.set_desc(f' tried to use Ainu Client 2020 and got restricted!')
+					log.info("Sent to webhook {} DONE!!".format(glob.conf.config["discord"]["enable"]))
+					webhook.post()
 					raise exceptions.loginCheatClientsException()
+
 			# Ainu Client 2019
 			elif aobaHelper.getOsuVer(userID) in ["0Ainu", "b20190326.2", "b20190401.22f56c084ba339eefd9c7ca4335e246f80", "b20191223.3"]:
-				log.info("Account {} tried to use Ainu Client!".format(userID))
+				log.info("Account ID {} tried to use Ainu Client!".format(userID))
 				if userUtils.isRestricted(userID):
 					responseToken.enqueue(serverPackets.notification("You're banned because you're currently using Ainu Client. Enjoy your restriction :)"))
+					#if glob.conf.config["discord"]["enable"] == True:
+					webhook = aobaHelper.Webhook(glob.conf.config["discord"]["anticheat"],color=0xadd8e6,footer="Man... this is worst player. [ Login Gate AC ]")
+					webhook.set_title(title="Catched some cheater Account ID {}".format(userID))
+					webhook.set_desc(f' tried to use Ainu Client!')
+					log.info("Sent to webhook {} DONE!!".format(glob.conf.config["discord"]["enable"]))
+					webhook.post()
 				else:
 					glob.tokens.deleteToken(userID)
 					userUtils.restrict(userID)
+					#if glob.conf.config["discord"]["enable"] == True:
+					webhook = aobaHelper.Webhook(glob.conf.config["discord"]["anticheat"],color=0xadd8e6,footer="Man... this is worst player. [ Login Gate AC ]")
+					webhook.set_title(title="Catched some cheater Account ID {}".format(userID))
+					webhook.set_desc(f' tried to use Ainu Client and got restricted!')
+					log.info("Sent to webhook {} DONE!!".format(glob.conf.config["discord"]["enable"]))
+					webhook.post()
 					raise exceptions.loginCheatClientsException()
+
 			# hqOsu
 			elif aobaHelper.getOsuVer(userID) == "b20190226.2":
-				log.info("Account {} tried to use hqOsu!".format(userID))
+				log.info("Account ID {} tried to use hqOsu!".format(userID))
 				if userUtils.isRestricted(userID):
 					responseToken.enqueue(serverPackets.notification("Trying to use hqOsu in here? Well... No, sorry. We don't allow cheats here. Go play https://cookiezi.pw or others cheat server."))
+					#if glob.conf.config["discord"]["enable"] == True:
+					webhook = aobaHelper.Webhook(glob.conf.config["discord"]["anticheat"],color=0xadd8e6,footer="Man... this is worst player. [ Login Gate AC ]")
+					webhook.set_title(title="Catched some cheater Account ID {}".format(userID))
+					webhook.set_desc(f' tried to use hqOsu!')
+					log.info("Sent to webhook {} DONE!!".format(glob.conf.config["discord"]["enable"]))
+					webhook.post()
 				else:
 					glob.tokens.deleteToken(userID)
 					userUtils.restrict(userID)
+					#if glob.conf.config["discord"]["enable"] == True:
+					webhook = aobaHelper.Webhook(glob.conf.config["discord"]["anticheat"],color=0xadd8e6,footer="Man... this is worst player. [ Login Gate AC ]")
+					webhook.set_title(title="Catched some cheater Account ID {}".format(userID))
+					webhook.set_desc(f' tried to use hqOsu and got restricted!')
+					log.info("Sent to webhook {} DONE!!".format(glob.conf.config["discord"]["enable"]))
+					webhook.post()
 					raise exceptions.loginCheatClientsException()
 
 		# Send all needed login packets
