@@ -2,7 +2,6 @@ from common.log import logUtils as log
 from constants import clientPackets
 from constants import serverPackets
 from objects import glob
-from common.constants import mods
 
 def handle(userToken, packetData):
 	# Get usertoken data

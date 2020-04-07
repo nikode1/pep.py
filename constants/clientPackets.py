@@ -1,6 +1,5 @@
 from constants import dataTypes
 from helpers import packetHelper
-from constants import slotStatuses
 
 
 """ Users listing packets """
