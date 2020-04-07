@@ -453,7 +453,7 @@ class match:
 		if self.vinseID is None:
 			self.vinseID = (int(time.time()) // (60 * 15)) << 32 | self.matchID
 			chat.sendMessage(glob.BOT_NAME, chanName, "Match history available [{} here]".format(
-				"https://multi.bigtu.vip/match/{}".format(self.vinseID)
+				"https://multi.ainu.pw/match/{}".format(self.vinseID)
 			))
 		if not self.bloodcatAlert:
 			chat.sendMessage(
