@@ -1346,7 +1346,7 @@ def editMap(fro, chan, message): # Using Atoka's editMap with Aoba's edit
 
 		chat.sendMessage(glob.BOT_NAME, "#announce", msg)
 		
-		if glob.conf.config["discord"]["enable"] == True:
+		if glob.conf.config["discord"]["enable"]:
 			if mapType == "set":
 				webhookdesp = "{} (set) has been {} by {}".format(beatmapData["song_name"], status, name)
 			else:
@@ -1534,6 +1534,10 @@ commands = [
 		#"callback": ask
 	#}, {
 	{
+		"trigger": "!maprq",
+		"privileges": privileges.ADMIN_MANAGE_BEATMAPS,
+		"callback": getBeatmapRequest
+	}, {
 		"trigger": "!map",
 		"syntax": "<rank/unrank> <set/map> <ID>",
 		"privileges": privileges.ADMIN_MANAGE_BEATMAPS,
