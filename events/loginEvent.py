@@ -2,6 +2,8 @@ import sys
 import time
 import traceback
 
+from datetime import datetime
+
 from common.constants import privileges
 from common.log import logUtils as log
 from common.ripple import userUtils
@@ -14,6 +16,9 @@ from helpers import locationHelper
 from helpers import kotrikhelper
 from objects import glob
 
+curryear = int(datetime.now().year)
+today = datetime.date(datetime(curryear, int(datetime.now().month), int(datetime.now().day)))
+peppyday = datetime.date(datetime(curryear, 4, 20))
 
 def handle(tornadoRequest):
 	# Data to return
@@ -148,6 +153,11 @@ def handle(tornadoRequest):
 		# Server restarting check
 		if glob.restarting:
 			raise exceptions.banchoRestartingException()
+
+		# Check If today is 4/20 (Peppy Day)
+		if today == peppyday:
+			if glob.conf.extra["mode"]["peppyday"]:
+				responseToken.enqueue(serverPackets.notification("Everyone on today will have peppy as their profile picture! Have fun on peppy day"))
 
 		# Send login notification before maintenance message
 		if glob.banchoConf.config["loginNotification"] != "":
