@@ -121,7 +121,8 @@ class token:
 			self._bufferLock.acquire()
 
 			# Never enqueue for IRC clients or Bot
-			if self.irc or self.userID < 999:
+			#if self.irc or self.userID < 999:
+			if self.irc or self.userID == 999:
 				return
 
 			# Avoid memory leaks
