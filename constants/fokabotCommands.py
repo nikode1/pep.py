@@ -1328,7 +1328,7 @@ def editMap(fro, chan, message): # Using Atoka's editMap with Aoba's edit
 		else:
 			status = "unranked"
 		
-		if beatmapData['ranked'] == rankTypeID:
+		if beatmapData["ranked"] == rankTypeID:
 			return "This map is already {}".format(status)
 
 		if mapType == 'set':
