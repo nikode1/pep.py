@@ -6,6 +6,7 @@ import tornado.gen
 import tornado.httpserver
 import tornado.ioloop
 import tornado.web
+import time
 from raven.contrib.tornado import AsyncSentryClient
 import redis
 
@@ -165,7 +166,6 @@ if __name__ == "__main__":
 		consoleHelper.printNoNl("> Deleting cached bancho sessions from DB... ")
 		glob.tokens.deleteBanchoSessions()
 		consoleHelper.printDone()
-
 		# Create threads pool
 		try:
 			consoleHelper.printNoNl("> Creating threads pool... ")
@@ -271,6 +271,23 @@ if __name__ == "__main__":
 				consoleHelper.printColored("[!] Warning! Datadog stats tracking is disabled!", bcolors.YELLOW)
 		except:
 			consoleHelper.printColored("[!] Error while starting Datadog client! Please check your config.ini and run the server again", bcolors.RED)
+
+		# For graph - made by kotrik
+		try:
+			# start thread
+			consoleHelper.printColored("> Starting bancho stats!", bcolors.GREEN)
+			def statsUpdateLoop():
+				while True:
+					time.sleep(120) # sleeping 120 seconds (2 minutes)
+
+					online_users = len(glob.tokens.tokens)
+					multiplayers_matches = len(glob.matches.matches)
+					registered_users = glob.db.fetch("SELECT COUNT(id) as players FROM users")
+					glob.db.execute("INSERT INTO bancho_stats (users_osu, multiplayer_matches, registered_users, time) VALUES (%s, %s, %s, %s)", [online_users, multiplayers_matches, int(registered_users['players']), time.time()])
+
+			threading.Thread(target=statsUpdateLoop).start()
+		except:
+			consoleHelper.printColored("[!] Stats pushing can't start due some troubles! Please check this!", bcolors.RED)
 
 		# IRC start message and console output
 		glob.irc = generalUtils.stringToBool(glob.conf.config["irc"]["enable"])

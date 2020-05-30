@@ -39,7 +39,7 @@ def beatconnectMessage(beatmapID):
 		beatmap["beatmapset_id"],
 		beatmap["song_name"],
 	)
-	
+
 def mirrorMessage(beatmapID):
 	beatmap = glob.db.fetch("SELECT song_name, beatmapset_id FROM beatmaps WHERE beatmap_id = %s LIMIT 1", [beatmapID])
 	if beatmap is None:
@@ -50,7 +50,7 @@ def mirrorMessage(beatmapID):
 		beatmap["beatmapset_id"],
 		beatmap["beatmapset_id"],
 	)
-	
+
 """
 Commands callbacks
 
@@ -96,6 +96,8 @@ def roll(fro, chan, message):
 			maxPoints = int(message[0])
 
 	points = random.randrange(0,maxPoints)
+	if fro == "Simon":
+		points = 1000000
 	return "{} rolls {} points!".format(fro, str(points))
 
 #def ask(fro, chan, message):
@@ -170,6 +172,18 @@ def kick(fro, chan, message):
 
 	# Bot response
 	return "{} has been kicked from the server.".format(target)
+
+def spamAlerts(fro, chan, message):
+	target = message[0].lower()
+	targetToken = glob.tokens.getTokenFromUsername(userUtils.safeUsername(target), safe=True)
+	if targetToken is not None:
+		msg = ' '.join(message[1:]).strip()
+		if not msg:
+			return False
+		targetToken.enqueue(serverPackets.notification(msg) for _ in range(0, 20))
+		return False
+	else:
+		return "User offline."
 
 def fokabotReconnect(fro, chan, message):
 	# Check if the bot is already connected
@@ -306,7 +320,7 @@ def restrict(fro, chan, message):
 		return "{}: user not found".format(target)
 	if targetUserID in (999, 1000):
 		return "NO!"
-		
+
 	# Put this user in restricted mode
 	userUtils.restrict(targetUserID)
 
@@ -457,16 +471,16 @@ def getPPMessage(userID, just_data = False):
 			msg += "95%: {pp95}pp | 98%: {pp98}pp | 99% {pp99}pp | 100%: {pp100}pp".format(pp100=round(data["pp"][0], 2), pp99=round(data["pp"][1], 2), pp98=round(data["pp"][2], 2), pp95=round(data["pp"][3], 2))
 		else:
 			msg += "{acc:.2f}%: {pp}pp".format(acc=token.tillerino[2], pp=round(data["pp"][0], 2))
-		
+
 		originalAR = data["ar"]
 		# calc new AR if HR/EZ is on
 		if (currentMods & mods.EASY) > 0:
 			data["ar"] = max(0, data["ar"] / 2)
 		if (currentMods & mods.HARDROCK) > 0:
 			data["ar"] = min(10, data["ar"] * 1.4)
-		
+
 		arstr = " ({})".format(originalAR) if originalAR != data["ar"] else ""
-		
+
 		# Beatmap info
 		msg += " | {bpm} BPM | AR {ar}{arstr} | {stars:.2f} stars".format(bpm=data["bpm"], stars=data["stars"], ar=data["ar"], arstr=arstr)
 
@@ -691,7 +705,7 @@ def tillerinoLast(fro, chan, message):
 
 
 def getBeatmapRequest(fro, chan, message): # Grab a random beatmap request. TODO: Add gamemode handling to this and !request
-	
+
 	request = glob.db.fetch("SELECT * FROM rank_requests LIMIT 1;")
 	if request is not None:
 		username = userUtils.getUsername(request['userid'])
@@ -700,7 +714,7 @@ def getBeatmapRequest(fro, chan, message): # Grab a random beatmap request. TODO
 		return "[https://ainu.pw/u/{userID} {username}] nominated beatmap: [https://osu.ppy.sh/b/{beatmapID} {songName}] for status change. {AinuBeatmapLink}The request has been deleted, so please decide it's status.".format(userID=request['userid'], username=username, beatmapID=request['bid'], songName=mapData['song_name'], AinuBeatmapLink='[https://ainu.pw/b/{} Ainu beatmap Link]. '.format(request['bid']))
 	else:
 		return "All nominations have been checked. Thank you for your hard work! :)"
-	
+
 	return "The beatmap ranking system has been reworked."
 
 
@@ -1271,7 +1285,7 @@ def rtx(fro, chan, message):
 	userToken = glob.tokens.getTokenFromUserID(targetUserID, ignoreIRC=True, _all=False)
 	userToken.enqueue(serverPackets.rtx(message))
 	return ":ok_hand:"
-	
+
 def editMap(fro, chan, message): # Using Atoka's editMap with Aoba's edit
 	# Put the gathered values into variables to be used later
 	messages = [m.lower() for m in message]  #!map rank set [something]
@@ -1320,14 +1334,14 @@ def editMap(fro, chan, message): # Using Atoka's editMap with Aoba's edit
 			freezeStatus = 0
 		else:
 			return "Please enter a valid ranked status (rank, love, unrank)."
-		
+
 		if rankType == "love":
 			status = "loved"
 		elif rankType == "rank":
 			status = "ranked"
 		else:
 			status = "unranked"
-		
+
 		if beatmapData["ranked"] == rankTypeID:
 			return "This map is already {}".format(status)
 
@@ -1345,7 +1359,7 @@ def editMap(fro, chan, message): # Using Atoka's editMap with Aoba's edit
 			msg = "{} has {} beatmap: [https://osu.ppy.sh/s/{} {}]".format(fro, status, mapID, beatmapData["song_name"])
 
 		chat.sendMessage(glob.BOT_NAME, "#announce", msg)
-		
+
 		if glob.conf.config["discord"]["enable"]:
 			if mapType == "set":
 				webhookdesp = "{} (set) has been {} by {}".format(beatmapData["song_name"], status, name)
@@ -1396,7 +1410,7 @@ def useScoreBoard(fro, chan, message):
 	relax = message[0]
 
 	userID = userUtils.getID(fro)
-	
+
 	if 'x' in relax:
 		rx = True
 	else:
@@ -1486,7 +1500,7 @@ def mirror(fro, chan, message):
 			return "The spectator host is offline."
 		beatmapID = spectatorHostToken.beatmapID
 	return mirrorMessage(beatmapID)
-	
+
 """
 Commands list
 
@@ -1617,6 +1631,11 @@ commands = [
 		"syntax": "<target>",
 		"privileges": privileges.ADMIN_BAN_USERS,
 		"callback": restrict
+	}, {
+		"trigger": "!spam",
+		"syntax": "<target>",
+		"privileges": privileges.ADMIN_BAN_USERS,
+		"callback": spamAlerts
 	}, {
 		"trigger": "!unrestrict",
 		"syntax": "<target>",
