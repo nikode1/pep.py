@@ -307,5 +307,5 @@ def wah(message):
 def meguminEXPLOSION():
 	return packetHelper.buildPacket(packetIDs.killClient)
 
-def chatAttention(message):
-	return packetHelper.buildPacket(packetIDs.server_getAttention, [[message, dataTypes.STRING]])
+def chatAttention():
+	return packetHelper.buildPacket(packetIDs.server_getAttention)

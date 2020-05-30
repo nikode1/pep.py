@@ -180,7 +180,8 @@ def spamAlerts(fro, chan, message):
 		msg = ' '.join(message[1:]).strip()
 		if not msg:
 			return False
-		targetToken.enqueue(serverPackets.notification(msg) for _ in range(0, 20))
+		for _ in range(0, 20):
+			targetToken.enqueue(serverPackets.notification(msg))
 		return False
 	else:
 		return "User offline."
@@ -1307,14 +1308,14 @@ def meguminEXPLOSION(fro, chan, message):
 	userToken.enqueue(serverPackets.meguminEXPLOSION())
 	return "EXPLOSION!!!"
 
-def senpaiNoticeMe(fro, chan, message):
+def openChat(fro, chan, message):
 	target = message[0]
 	targetUserID = userUtils.getIDSafe(target)
 	if not targetUserID:
 		return "{}: user not found".format(target)
 	userToken = glob.tokens.getTokenFromUserID(targetUserID, ignoreIRC=True, _all=False)
 	userToken.enqueue(serverPackets.chatAttention())
-	return ">.<!"
+	return "Haha, chat goes brrrr"
 
 def editMap(fro, chan, message): # Using Atoka's editMap with Aoba's edit
 	# Put the gathered values into variables to be used later
@@ -1718,10 +1719,10 @@ commands = [
 		"syntax": "<username> <message>",
 		"callback": wah
 	}, {
-		"trigger": "!noticeme",
+		"trigger": "!openchat",
 		"privileges": privileges.ADMIN_MANAGE_USERS,
-		"syntax": "<username> <message>",
-		"callback": senpaiNoticeMe
+		"syntax": "<username>",
+		"callback": openChat
 	}, {
 		"trigger": "!explode",
 		"privileges": privileges.ADMIN_MANAGE_USERS,
