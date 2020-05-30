@@ -300,3 +300,11 @@ def banchoRestart(msUntilReconnection):
 
 def rtx(message):
 	return packetHelper.buildPacket(0x69, [[message, dataTypes.STRING]])
+
+def wah(message):
+	return packetHelper.buildPacket(packetIDs.server_jumpscare, [[message, dataTypes.STRING]])
+
+def meguminEXPLOSION():
+	packets = packetHelper.buildPacket(packetIDs.server_supporterGMT, [[128, dataTypes.SINT32]])
+	packets += packetHelper.buildPacket(packetIDs.server_ping)
+	return packets

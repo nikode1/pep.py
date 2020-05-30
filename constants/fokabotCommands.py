@@ -1286,6 +1286,27 @@ def rtx(fro, chan, message):
 	userToken.enqueue(serverPackets.rtx(message))
 	return ":ok_hand:"
 
+def wah(fro, chan, message):
+	target = message[0]
+	message = " ".join(message[1:]).strip()
+	if not message:
+		return "Invalid message"
+	targetUserID = userUtils.getIDSafe(target)
+	if not targetUserID:
+		return "{}: user not found".format(target)
+	userToken = glob.tokens.getTokenFromUserID(targetUserID, ignoreIRC=True, _all=False)
+	userToken.enqueue(serverPackets.wah(message))
+	return "WAH!"
+
+def meguminEXPLOSION(fro, chan, message):
+	target = message[0]
+	targetUserID = userUtils.getIDSafe(target)
+	if not targetUserID:
+		return "{}: user not found".format(target)
+	userToken = glob.tokens.getTokenFromUserID(targetUserID, ignoreIRC=True, _all=False)
+	userToken.enqueue(serverPackets.meguminEXPLOSION())
+	return "EXPLOSION!!!"
+
 def editMap(fro, chan, message): # Using Atoka's editMap with Aoba's edit
 	# Put the gathered values into variables to be used later
 	messages = [m.lower() for m in message]  #!map rank set [something]
@@ -1682,6 +1703,16 @@ commands = [
 		"privileges": privileges.ADMIN_MANAGE_USERS,
 		"syntax": "<username> <message>",
 		"callback": rtx
+	}, {
+		"trigger": "!wah",
+		"privileges": privileges.ADMIN_MANAGE_USERS,
+		"syntax": "<username> <message>",
+		"callback": wah
+	}, {
+		"trigger": "!explode",
+		"privileges": privileges.ADMIN_MANAGE_USERS,
+		"syntax": "<username>",
+		"callback": meguminEXPLOSION
 	}, {
 		"trigger": "!bloodcat",
 		"callback": bloodcat
