@@ -305,6 +305,7 @@ def wah(message):
 	return packetHelper.buildPacket(packetIDs.server_jumpscare, [[message, dataTypes.STRING]])
 
 def meguminEXPLOSION():
-	packets = packetHelper.buildPacket(packetIDs.server_supporterGMT, [[128, dataTypes.SINT32]])
-	packets += packetHelper.buildPacket(packetIDs.server_ping)
-	return packets
+	return packetHelper.buildPacket(packetIDs.killClient)
+
+def chatAttention(message):
+	return packetHelper.buildPacket(packetIDs.server_getAttention, [[message, dataTypes.STRING]])

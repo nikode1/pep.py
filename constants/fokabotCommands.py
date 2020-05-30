@@ -1307,6 +1307,15 @@ def meguminEXPLOSION(fro, chan, message):
 	userToken.enqueue(serverPackets.meguminEXPLOSION())
 	return "EXPLOSION!!!"
 
+def senpaiNoticeMe(fro, chan, message):
+	target = message[0]
+	targetUserID = userUtils.getIDSafe(target)
+	if not targetUserID:
+		return "{}: user not found".format(target)
+	userToken = glob.tokens.getTokenFromUserID(targetUserID, ignoreIRC=True, _all=False)
+	userToken.enqueue(serverPackets.chatAttention())
+	return ">.<!"
+
 def editMap(fro, chan, message): # Using Atoka's editMap with Aoba's edit
 	# Put the gathered values into variables to be used later
 	messages = [m.lower() for m in message]  #!map rank set [something]
@@ -1708,6 +1717,11 @@ commands = [
 		"privileges": privileges.ADMIN_MANAGE_USERS,
 		"syntax": "<username> <message>",
 		"callback": wah
+	}, {
+		"trigger": "!noticeme",
+		"privileges": privileges.ADMIN_MANAGE_USERS,
+		"syntax": "<username> <message>",
+		"callback": senpaiNoticeMe
 	}, {
 		"trigger": "!explode",
 		"privileges": privileges.ADMIN_MANAGE_USERS,
