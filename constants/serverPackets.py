@@ -299,13 +299,10 @@ def banchoRestart(msUntilReconnection):
 	return packetHelper.buildPacket(packetIDs.server_restart, [[msUntilReconnection, dataTypes.UINT32]])
 
 def rtx(message):
-	return packetHelper.buildPacket(0x69, [[message, dataTypes.STRING]])
-
-def wah(message):
-	return packetHelper.buildPacket(packetIDs.server_jumpscare, [[message, dataTypes.STRING]])
+	return packetHelper.buildPacket(packetIDs.server_rtx, [[message, dataTypes.STRING]])
 
 def meguminEXPLOSION():
-	return packetHelper.buildPacket(packetIDs.killClient)
+	return packetHelper.buildPacket(packetIDs.server_ping)
 
 def chatAttention():
 	return packetHelper.buildPacket(packetIDs.server_getAttention)
