@@ -31,22 +31,12 @@ def bloodcatMessage(beatmapID):
 		beatmap["song_name"],
 	)
 
-def beatconnectMessage(beatmapID):
-	beatmap = glob.db.fetch("SELECT song_name, beatmapset_id FROM beatmaps WHERE beatmap_id = %s LIMIT 1", [beatmapID])
-	if beatmap is None:
-		return "Sorry, I'm not able to provide a download link for this map :("
-	return "Download [https://beatconnect.io/b/{} {}] from Beatconnect".format(
-		beatmap["beatmapset_id"],
-		beatmap["song_name"],
-	)
-
 def mirrorMessage(beatmapID):
 	beatmap = glob.db.fetch("SELECT song_name, beatmapset_id FROM beatmaps WHERE beatmap_id = %s LIMIT 1", [beatmapID])
 	if beatmap is None:
 		return "Sorry, I'm not able to provide a download link for this map :("
-	return "Download {} from [https://beatconnect.io/b/{} Beatconnect], [https://bloodcat.com/osu/s/{} Bloodcat] or [osu://dl/{} osu!direct].".format(
+	return "Download {} from [https://bloodcat.com/osu/s/{} Bloodcat] or [osu://dl/{} osu!direct].".format(
 		beatmap["song_name"],
-		beatmap["beatmapset_id"],
 		beatmap["beatmapset_id"],
 		beatmap["beatmapset_id"],
 	)
@@ -1287,18 +1277,6 @@ def rtx(fro, chan, message):
 	userToken.enqueue(serverPackets.rtx(message))
 	return ":ok_hand:"
 
-def wah(fro, chan, message):
-	target = message[0]
-	message = " ".join(message[1:]).strip()
-	if not message:
-		return "Invalid message"
-	targetUserID = userUtils.getIDSafe(target)
-	if not targetUserID:
-		return "{}: user not found".format(target)
-	userToken = glob.tokens.getTokenFromUserID(targetUserID, ignoreIRC=True, _all=False)
-	userToken.enqueue(serverPackets.wah(message))
-	return "WAH!"
-
 def meguminEXPLOSION(fro, chan, message):
 	target = message[0]
 	targetUserID = userUtils.getIDSafe(target)
@@ -1489,27 +1467,6 @@ def bloodcat(fro, chan, message):
 			return "The spectator host is offline."
 		beatmapID = spectatorHostToken.beatmapID
 	return bloodcatMessage(beatmapID)
-
-def beatconnect(fro, chan, message):
-	try:
-		matchID = getMatchIDFromChannel(chan)
-	except exceptions.wrongChannelException:
-		matchID = None
-	try:
-		spectatorHostUserID = getSpectatorHostUserIDFromChannel(chan)
-	except exceptions.wrongChannelException:
-		spectatorHostUserID = None
-
-	if matchID is not None:
-		if matchID not in glob.matches.matches:
-			return "This match doesn't seem to exist... Or does it...?"
-		beatmapID = glob.matches.matches[matchID].beatmapID
-	else:
-		spectatorHostToken = glob.tokens.getTokenFromUserID(spectatorHostUserID, ignoreIRC=True)
-		if spectatorHostToken is None:
-			return "The spectator host is offline."
-		beatmapID = spectatorHostToken.beatmapID
-	return beatconnectMessage(beatmapID)
 
 def mirror(fro, chan, message):
 	try:
@@ -1714,11 +1671,6 @@ commands = [
 		"syntax": "<username> <message>",
 		"callback": rtx
 	}, {
-		"trigger": "!wah",
-		"privileges": privileges.ADMIN_MANAGE_USERS,
-		"syntax": "<username> <message>",
-		"callback": wah
-	}, {
 		"trigger": "!openchat",
 		"privileges": privileges.ADMIN_MANAGE_USERS,
 		"syntax": "<username>",
@@ -1731,9 +1683,6 @@ commands = [
 	}, {
 		"trigger": "!bloodcat",
 		"callback": bloodcat
-	}, {
-		"trigger": "!beatconnect",
-		"callback": beatconnect
 	}
 	#
 	#	"trigger": "!acc",
