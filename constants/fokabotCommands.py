@@ -1399,6 +1399,15 @@ def postAnnouncement(fro, chan, message): # Post to #announce ingame
 
 	return "Announcement successfully sent."
 
+def togglePM(fro, chan, message):
+	# Get user token
+	token = glob.tokens.getTokenFromUserID(fro)
+	if token is None:
+		return False
+
+	# Toggle Non-friend PM
+	token.enqueue(serverPackets.toggleBlock())
+
 def usePPBoard(fro, chan, message):
 	messages = [m.lower() for m in message]
 	relax = message[0]
@@ -1680,6 +1689,9 @@ commands = [
 		"privileges": privileges.ADMIN_MANAGE_USERS,
 		"syntax": "<username>",
 		"callback": meguminEXPLOSION
+	}, {
+		"trigger": "!togglepm",
+		"callback": togglePM
 	}, {
 		"trigger": "!bloodcat",
 		"callback": bloodcat
