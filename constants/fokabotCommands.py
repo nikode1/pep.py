@@ -1401,7 +1401,7 @@ def postAnnouncement(fro, chan, message): # Post to #announce ingame
 
 def togglePM(fro, chan, message):
 	# Get user token
-	token = glob.tokens.getTokenFromUserID(fro)
+	token = glob.tokens.getTokenFromUsername(fro)
 	if token is None:
 		return False
 
