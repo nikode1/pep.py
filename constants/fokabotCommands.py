@@ -1406,7 +1406,7 @@ def togglePM(fro, chan, message):
 		return False
 
 	# Toggle Non-friend PM
-	token.enqueue(serverPackets.toggleBlock())
+	token.enqueue(serverPackets.togglePM())
 
 def usePPBoard(fro, chan, message):
 	messages = [m.lower() for m in message]
