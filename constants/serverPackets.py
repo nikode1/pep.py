@@ -289,7 +289,7 @@ def matchAbort():
 	return packetHelper.buildPacket(packetIDs.server_matchAbort)
 
 def switchServer(address):
-	return packetHelper.buildPacket(packetIDs.server_switchServer, [[address, dataTypes.STRING]])
+	return packetHelper.buildPacket(packetIDs.server_switchTourneyServer, [[address, dataTypes.STRING]])
 
 """ Other packets """
 def notification(message):
