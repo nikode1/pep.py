@@ -308,4 +308,4 @@ def chatAttention():
 	return packetHelper.buildPacket(packetIDs.server_getAttention)
 
 def togglePM():
-	return packetHelper.buildPacket(packetIDs.toggle_NonFriendBlockPM)
+	return packetHelper.buildPacket(packetIDs.server_userToggleBlockNonFriendPM)
