@@ -7,4 +7,7 @@ filters.txt
 redistest.py
 *.c
 *.so
+*.pyd
+*.html
 .pyenv
+cython_setup.bat
