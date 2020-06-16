@@ -120,7 +120,6 @@ def handle(tornadoRequest):
 			glob.tokens.deleteOldTokens(userID)
 		if numericVersion < glob.conf.config["server"]["osuminver"]:
 			raise exceptions.forceUpdateException()
-		log.info("a user logged on with osu! version {}".format(numericVersion))
 		responseToken = glob.tokens.addToken(userID, requestIP, timeOffset=timeOffset, tournament=isTournament)
 		responseTokenString = responseToken.token
 
