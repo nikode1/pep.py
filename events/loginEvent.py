@@ -1,3 +1,4 @@
+import re
 import sys
 import time
 import traceback
@@ -49,9 +50,11 @@ def handle(tornadoRequest):
 		# [3] unique ID
 		# [4] disk ID
 		splitData = loginData[2].split("|")
-		osuVersion = splitData[0]
-		timeOffset = int(splitData[1])
-		clientData = splitData[3].split(":")[:5]
+		osuVersion = splitData[0] # osu! version
+		timeOffset = int(splitData[1]) # timezone
+		showCity = int(splitData[2]) # allow to show city
+		clientData = splitData[3].split(":")[:5] # security hash
+		blockNonFriendPM = int(splitData[4]) # allow PM
 		if len(clientData) < 4:
 			raise exceptions.forceUpdateException()
 
@@ -112,8 +115,11 @@ def handle(tornadoRequest):
 
 		# Delete old tokens for that user and generate a new one
 		isTournament = "tourney" in osuVersion
+		osuMinimumVersion = re.sub(r'[^0-9.]', '', osuVersion)
 		if not isTournament:
 			glob.tokens.deleteOldTokens(userID)
+		if int(osuMinimumVersion) < int(glob.conf.config["server"]["osuminver"]):
+			raise exceptions.forceUpdateException()
 		responseToken = glob.tokens.addToken(userID, requestIP, timeOffset=timeOffset, tournament=isTournament)
 		responseTokenString = responseToken.token
 
@@ -346,10 +352,15 @@ def handle(tornadoRequest):
 		# User tried to log in from unknown IP
 		responseData += serverPackets.needVerification()
 	except exceptions.haxException:
-		# Using oldoldold client, we don't have client data. Force update.
+		# Uh...
+		responseData += serverPackets.notification("Your HWID is banned.")
+		responseData += serverPackets.loginFailed()
+	except exceptions.forceUpdateException:
+		# This happens when you:
+		# - Using older build than config set
+		# - Using oldoldold client, we don't have client data. Force update.
 		# (we don't use enqueue because we don't have a token since login has failed)
 		responseData += serverPackets.forceUpdate()
-		responseData += serverPackets.notification("Hory shitto, your client is TOO old! Nice prehistory! Please turn update it from the settings!")
 	except:
 		log.error("Unknown error!\n```\n{}\n{}```".format(sys.exc_info(), traceback.format_exc()))
 	finally:

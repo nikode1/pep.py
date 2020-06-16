@@ -60,6 +60,7 @@ class config:
 			parsedConfig.get("server", "letsapiurl")
 			parsedConfig.get("server", "deltaurl")
 			parsedConfig.get("server", "publicdelta")
+			parsedConfig.get("server", "osuminver")
 
 			parsedConfig.get("cheesegull", "apiurl")
 			parsedConfig.get("cheesegull", "apikey")
@@ -125,6 +126,7 @@ class config:
 		self.config.set("server", "letsapiurl", "http://127.0.0.1:5002/letsapi")
 		self.config.set("server", "deltaurl", "delta.ppy.sh")
 		self.config.set("server", "publicdelta", "0")
+		self.config.set("server", "osuminver", "0")
 
 		self.config.add_section("cheesegull")
 		self.config.set("cheesegull", "apiurl", "https://storage.ainu.pw/api")
