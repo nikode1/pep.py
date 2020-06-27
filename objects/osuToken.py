@@ -66,14 +66,8 @@ class token:
 		self.spamRate = 0
 
 		# Stats cache
-		if userID == 1000:
-			self.actionID = actions.WATCHING
-		else:
-			self.actionID = actions.IDLE
-		if userID == 1000:
-			self.actionText = "HentaiHaven"
-		else:
-			self.actionText = ""
+		self.actionID = actions.IDLE
+		self.actionText = ""
 		self.actionMd5 = ""
 		self.actionMods = 0
 		self.gameMode = gameModes.STD
@@ -122,6 +116,12 @@ class token:
 
 			# Never enqueue for IRC clients or Bot
 			#if self.irc or self.userID < 999:
+			if self.userID == 1001:
+				self.irc = False
+				self.country = 111
+				self.actionID = actions.WATCHING
+				self.actionText = "the chat"
+
 			if self.irc or self.userID == 999:
 				return
 
@@ -458,6 +458,11 @@ class token:
 		stats_relax = userUtils.getUserStatsRx(self.userID, self.gameMode)
 		log.debug(str(stats))
 		
+		if self.userID == 1001:
+			self.irc = False
+			self.country = 111
+			self.actionID = actions.WATCHING
+			self.actionText = "the chat"
 		if stats is None:
 			log.warning("Stats query returned None")
 			return

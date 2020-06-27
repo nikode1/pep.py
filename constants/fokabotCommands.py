@@ -31,16 +31,26 @@ def bloodcatMessage(beatmapID):
 		beatmap["song_name"],
 	)
 
+def beatconnectMessage(beatmapID):
+	beatmap = glob.db.fetch("SELECT song_name, beatmapset_id FROM beatmaps WHERE beatmap_id = %s LIMIT 1", [beatmapID])
+	if beatmap is None:
+		return "Sorry, I'm not able to provide a download link for this map :("
+	return "Download [https://beatconnect.io/b/{} {}] from Beatconnect".format(
+		beatmap["beatmapset_id"],
+		beatmap["song_name"],
+	)
+	
 def mirrorMessage(beatmapID):
 	beatmap = glob.db.fetch("SELECT song_name, beatmapset_id FROM beatmaps WHERE beatmap_id = %s LIMIT 1", [beatmapID])
 	if beatmap is None:
 		return "Sorry, I'm not able to provide a download link for this map :("
-	return "Download {} from [https://bloodcat.com/osu/s/{} Bloodcat] or [osu://dl/{} osu!direct].".format(
+	return "Download {} from [https://beatconnect.io/b/{} Beatconnect], [https://bloodcat.com/osu/s/{} Bloodcat] or [osu://dl/{} osu!direct].".format(
 		beatmap["song_name"],
 		beatmap["beatmapset_id"],
 		beatmap["beatmapset_id"],
+		beatmap["beatmapset_id"],
 	)
-
+	
 """
 Commands callbacks
 
@@ -86,8 +96,6 @@ def roll(fro, chan, message):
 			maxPoints = int(message[0])
 
 	points = random.randrange(0,maxPoints)
-	if fro == "Simon":
-		points = 1000000
 	return "{} rolls {} points!".format(fro, str(points))
 
 #def ask(fro, chan, message):
@@ -162,19 +170,6 @@ def kick(fro, chan, message):
 
 	# Bot response
 	return "{} has been kicked from the server.".format(target)
-
-def spamAlerts(fro, chan, message):
-	target = message[0].lower()
-	targetToken = glob.tokens.getTokenFromUsername(userUtils.safeUsername(target), safe=True)
-	if targetToken is not None:
-		msg = ' '.join(message[1:]).strip()
-		if not msg:
-			return False
-		for _ in range(0, 20):
-			targetToken.enqueue(serverPackets.notification(msg))
-		return False
-	else:
-		return "User offline."
 
 def fokabotReconnect(fro, chan, message):
 	# Check if the bot is already connected
@@ -311,7 +306,7 @@ def restrict(fro, chan, message):
 		return "{}: user not found".format(target)
 	if targetUserID in (999, 1000):
 		return "NO!"
-
+		
 	# Put this user in restricted mode
 	userUtils.restrict(targetUserID)
 
@@ -462,16 +457,16 @@ def getPPMessage(userID, just_data = False):
 			msg += "95%: {pp95}pp | 98%: {pp98}pp | 99% {pp99}pp | 100%: {pp100}pp".format(pp100=round(data["pp"][0], 2), pp99=round(data["pp"][1], 2), pp98=round(data["pp"][2], 2), pp95=round(data["pp"][3], 2))
 		else:
 			msg += "{acc:.2f}%: {pp}pp".format(acc=token.tillerino[2], pp=round(data["pp"][0], 2))
-
+		
 		originalAR = data["ar"]
 		# calc new AR if HR/EZ is on
 		if (currentMods & mods.EASY) > 0:
 			data["ar"] = max(0, data["ar"] / 2)
 		if (currentMods & mods.HARDROCK) > 0:
 			data["ar"] = min(10, data["ar"] * 1.4)
-
+		
 		arstr = " ({})".format(originalAR) if originalAR != data["ar"] else ""
-
+		
 		# Beatmap info
 		msg += " | {bpm} BPM | AR {ar}{arstr} | {stars:.2f} stars".format(bpm=data["bpm"], stars=data["stars"], ar=data["ar"], arstr=arstr)
 
@@ -696,7 +691,7 @@ def tillerinoLast(fro, chan, message):
 
 
 def getBeatmapRequest(fro, chan, message): # Grab a random beatmap request. TODO: Add gamemode handling to this and !request
-
+	
 	request = glob.db.fetch("SELECT * FROM rank_requests LIMIT 1;")
 	if request is not None:
 		username = userUtils.getUsername(request['userid'])
@@ -705,7 +700,7 @@ def getBeatmapRequest(fro, chan, message): # Grab a random beatmap request. TODO
 		return "[https://ainu.pw/u/{userID} {username}] nominated beatmap: [https://osu.ppy.sh/b/{beatmapID} {songName}] for status change. {AinuBeatmapLink}The request has been deleted, so please decide it's status.".format(userID=request['userid'], username=username, beatmapID=request['bid'], songName=mapData['song_name'], AinuBeatmapLink='[https://ainu.pw/b/{} Ainu beatmap Link]. '.format(request['bid']))
 	else:
 		return "All nominations have been checked. Thank you for your hard work! :)"
-
+	
 	return "The beatmap ranking system has been reworked."
 
 
@@ -1276,25 +1271,7 @@ def rtx(fro, chan, message):
 	userToken = glob.tokens.getTokenFromUserID(targetUserID, ignoreIRC=True, _all=False)
 	userToken.enqueue(serverPackets.rtx(message))
 	return ":ok_hand:"
-
-def meguminEXPLOSION(fro, chan, message):
-	target = message[0]
-	targetUserID = userUtils.getIDSafe(target)
-	if not targetUserID:
-		return "{}: user not found".format(target)
-	userToken = glob.tokens.getTokenFromUserID(targetUserID, ignoreIRC=True, _all=False)
-	userToken.enqueue(serverPackets.meguminEXPLOSION())
-	return "EXPLOSION!!!"
-
-def openChat(fro, chan, message):
-	target = message[0]
-	targetUserID = userUtils.getIDSafe(target)
-	if not targetUserID:
-		return "{}: user not found".format(target)
-	userToken = glob.tokens.getTokenFromUserID(targetUserID, ignoreIRC=True, _all=False)
-	userToken.enqueue(serverPackets.chatAttention())
-	return "Haha, chat goes brrrr"
-
+	
 def editMap(fro, chan, message): # Using Atoka's editMap with Aoba's edit
 	# Put the gathered values into variables to be used later
 	messages = [m.lower() for m in message]  #!map rank set [something]
@@ -1343,14 +1320,14 @@ def editMap(fro, chan, message): # Using Atoka's editMap with Aoba's edit
 			freezeStatus = 0
 		else:
 			return "Please enter a valid ranked status (rank, love, unrank)."
-
+		
 		if rankType == "love":
 			status = "loved"
 		elif rankType == "rank":
 			status = "ranked"
 		else:
 			status = "unranked"
-
+		
 		if beatmapData["ranked"] == rankTypeID:
 			return "This map is already {}".format(status)
 
@@ -1368,7 +1345,7 @@ def editMap(fro, chan, message): # Using Atoka's editMap with Aoba's edit
 			msg = "{} has {} beatmap: [https://osu.ppy.sh/s/{} {}]".format(fro, status, mapID, beatmapData["song_name"])
 
 		chat.sendMessage(glob.BOT_NAME, "#announce", msg)
-
+		
 		if glob.conf.config["discord"]["enable"]:
 			if mapType == "set":
 				webhookdesp = "{} (set) has been {} by {}".format(beatmapData["song_name"], status, name)
@@ -1399,15 +1376,6 @@ def postAnnouncement(fro, chan, message): # Post to #announce ingame
 
 	return "Announcement successfully sent."
 
-def togglePM(fro, chan, message):
-	# Get user token
-	token = glob.tokens.getTokenFromUsername(fro)
-	if token is None:
-		return False
-
-	# Toggle Non-friend PM
-	token.enqueue(serverPackets.togglePM())
-
 def usePPBoard(fro, chan, message):
 	messages = [m.lower() for m in message]
 	relax = message[0]
@@ -1428,7 +1396,7 @@ def useScoreBoard(fro, chan, message):
 	relax = message[0]
 
 	userID = userUtils.getID(fro)
-
+	
 	if 'x' in relax:
 		rx = True
 	else:
@@ -1477,6 +1445,27 @@ def bloodcat(fro, chan, message):
 		beatmapID = spectatorHostToken.beatmapID
 	return bloodcatMessage(beatmapID)
 
+def beatconnect(fro, chan, message):
+	try:
+		matchID = getMatchIDFromChannel(chan)
+	except exceptions.wrongChannelException:
+		matchID = None
+	try:
+		spectatorHostUserID = getSpectatorHostUserIDFromChannel(chan)
+	except exceptions.wrongChannelException:
+		spectatorHostUserID = None
+
+	if matchID is not None:
+		if matchID not in glob.matches.matches:
+			return "This match doesn't seem to exist... Or does it...?"
+		beatmapID = glob.matches.matches[matchID].beatmapID
+	else:
+		spectatorHostToken = glob.tokens.getTokenFromUserID(spectatorHostUserID, ignoreIRC=True)
+		if spectatorHostToken is None:
+			return "The spectator host is offline."
+		beatmapID = spectatorHostToken.beatmapID
+	return beatconnectMessage(beatmapID)
+
 def mirror(fro, chan, message):
 	try:
 		matchID = getMatchIDFromChannel(chan)
@@ -1498,6 +1487,34 @@ def mirror(fro, chan, message):
 		beatmapID = spectatorHostToken.beatmapID
 	return mirrorMessage(beatmapID)
 
+def randomBeatmap(fro, chan, message):
+	# Run the command in PM only
+	if chan.startswith("#"):
+		return False
+	# please no bully :(
+	sql = glob.db.fetch("SELECT * FROM `beatmaps` WHERE `difficulty_std` >= (SELECT AVG(difficulty_std) AS difficulty_std FROM beatmaps INNER JOIN scores_relax FORCE INDEX(beatmap_md5) ON scores_relax.beatmap_md5 = beatmaps.beatmap_md5 WHERE scores_relax.userid = 1106 AND completed = 3) AND `difficulty_std` <= (SELECT AVG(difficulty_std) AS difficulty_std FROM beatmaps INNER JOIN scores_relax ON scores_relax.beatmap_md5 = beatmaps.beatmap_md5 WHERE scores_relax.userid = 1106 AND completed = 3)*1.5 AND `ranked` >= 2 ORDER BY RAND() LIMIT 1")
+		# Send request to LETS api
+	url = "{}/v1/pp?b={}".format(glob.conf.config["server"]["letsapiurl"].rstrip("/"), sql["beatmap_id"])
+	resp = requests.get(url, timeout=2)
+	try:
+		assert resp is not None
+		data = json.loads(resp.text)
+	except (json.JSONDecodeError, AssertionError):
+		raise exceptions.apiException()
+
+	# Make sure status is in response data
+	if "status" not in data:
+		raise exceptions.apiException()
+
+	# Make sure status is 200
+	if data["status"] != 200:
+		if "message" in data:
+			return "Error in LETS API call ({}).".format(data["message"])
+		else:
+			raise exceptions.apiException()
+	msg = "[https://ainu.pw/b/{beatmapID} {beatmapSong}] - 95%: {pp95}pp | 98%: {pp98}pp | 99% {pp99}pp | 100%: {pp100}pp | Stars: {difficulty} / BPM: {bpm} / AR: {ar}".format(beatmapID=sql["beatmap_id"], beatmapSong=sql["song_name"], difficulty=round(sql["difficulty_std"], 2), bpm=sql["bpm"], ar=data["ar"], pp100=round(data["pp"][0], 2), pp99=round(data["pp"][1], 2), pp98=round(data["pp"][2], 2), pp95=round(data["pp"][3], 2))
+	return msg
+	
 """
 Commands list
 
@@ -1629,11 +1646,6 @@ commands = [
 		"privileges": privileges.ADMIN_BAN_USERS,
 		"callback": restrict
 	}, {
-		"trigger": "!spam",
-		"syntax": "<target>",
-		"privileges": privileges.ADMIN_BAN_USERS,
-		"callback": spamAlerts
-	}, {
 		"trigger": "!unrestrict",
 		"syntax": "<target>",
 		"privileges": privileges.ADMIN_BAN_USERS,
@@ -1662,6 +1674,9 @@ commands = [
 		"trigger": "!pp",
 		"callback": pp
 	}, {
+		"trigger": "!random",
+		"callback": randomBeatmap
+	},  {
 		"trigger": "!update",
 		"callback": updateBeatmap
 	}, {
@@ -1680,21 +1695,11 @@ commands = [
 		"syntax": "<username> <message>",
 		"callback": rtx
 	}, {
-		"trigger": "!openchat",
-		"privileges": privileges.ADMIN_MANAGE_USERS,
-		"syntax": "<username>",
-		"callback": openChat
-	}, {
-		"trigger": "!explode",
-		"privileges": privileges.ADMIN_MANAGE_USERS,
-		"syntax": "<username>",
-		"callback": meguminEXPLOSION
-	}, {
-		"trigger": "!togglepm",
-		"callback": togglePM
-	}, {
 		"trigger": "!bloodcat",
 		"callback": bloodcat
+	}, {
+		"trigger": "!beatconnect",
+		"callback": beatconnect
 	}
 	#
 	#	"trigger": "!acc",
