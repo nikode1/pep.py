@@ -15,6 +15,13 @@ def getOsuVer(userID):
 	"""
 	return glob.db.fetch("SELECT osuver FROM users WHERE id = %s LIMIT 1", [userID])["osuver"]
 
+def getAlwaysOnline(userID):
+	"""
+	:param userID: user id
+	:return: osu! version
+	"""
+	return glob.db.fetch("SELECT always_online FROM users WHERE id = %s LIMIT 1", [userID])["always_online"]
+
 class Webhook:
 	def __init__(self, url, **kwargs):
 
