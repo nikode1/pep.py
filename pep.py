@@ -7,8 +7,10 @@ import tornado.httpserver
 import tornado.ioloop
 import tornado.web
 import time
+import signal
 from raven.contrib.tornado import AsyncSentryClient
 import redis
+
 
 import json
 import shutil
@@ -314,6 +316,19 @@ if __name__ == "__main__":
 		# Server start message and console output
 		log.logMessage("Server started!", discord="bunker", of="info.txt", stdout=False)
 		consoleHelper.printColored("> Tornado listening for HTTP(s) clients on 127.0.0.1:{}...".format(serverPort), bcolors.GREEN)
+
+		# Update last-id for correct workable multi API
+		lastMultiID = glob.redis.get("ripple:last_multi_id")
+		if not lastMultiID:
+			lastMultiID = b'1' # костыль
+			glob.redis.set("ripple:last_multi_id", 1)
+
+		glob.matches.lastID = int(lastMultiID.decode())
+
+		def sigterm_handler(signum, frame):
+			system.dispose()
+			
+		signal.signal(signal.SIGTERM, sigterm_handler)
 
 		# Connect to pubsub channels
 		pubSub.listener(glob.redis, {
