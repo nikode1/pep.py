@@ -190,7 +190,7 @@ class tokenList:
 			timeoutLimit = int(time.time()) - 100
 			for key, value in self.tokens.items():
 				# Check timeout (fokabot is ignored)
-				if value.pingTime < timeoutLimit and aobaHelper.getAlwaysOnline(userID) and not value.irc and not value.tournament:
+				if value.pingTime < timeoutLimit and aobaHelper.getAlwaysOnline(value.userID) and not value.irc and not value.tournament:
 					# That user has timed out, add to disconnected tokens
 					# We can't delete it while iterating or items() throws an error
 					timedOutTokens.append(key)
