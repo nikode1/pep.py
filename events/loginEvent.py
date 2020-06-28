@@ -160,6 +160,10 @@ def handle(tornadoRequest):
 		if glob.restarting:
 			raise exceptions.banchoRestartingException()
 
+		if userUtils.checkIfFlagged(userID):
+			responseToken.enqueue(serverPackets.notification("Staff suspect you of cheat! You have 5 days to make a full pc startup liveplay, or you will get restricted and you'll have to wait a month to appeal!"))
+
+
 		# Check If today is 4/20 (Peppy Day)
 		if today == peppyday:
 			if glob.conf.extra["mode"]["peppyday"]:
