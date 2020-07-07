@@ -71,7 +71,7 @@ def changeLocation(fro, chan, message):
 					user.silentKick()
 					return "Your country has been changed"
 			else:
-				return "This isn't a country code."
+				return "This isn't a country code. (Don't know where to get country code? [https://github.com/osuthailand/pep.py/blob/master/helpers/countryHelper.py Click here!])"
 		else:
 			return "Bad luck, you're not a donator, therefore you can't do that."
 
