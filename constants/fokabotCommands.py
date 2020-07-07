@@ -1499,11 +1499,14 @@ def mirror(fro, chan, message):
 	return mirrorMessage(beatmapID)
 
 def randomBeatmap(fro, chan, message):
+	#userID = userUtils.getID(fro)
+	userID = 1106
+	
 	# Run the command in PM only
 	if chan.startswith("#"):
 		return False
 	# please no bully :(
-	sql = glob.db.fetch("SELECT * FROM `beatmaps` WHERE `difficulty_std` >= (SELECT AVG(difficulty_std) AS difficulty_std FROM beatmaps INNER JOIN scores_relax FORCE INDEX(beatmap_md5) ON scores_relax.beatmap_md5 = beatmaps.beatmap_md5 WHERE scores_relax.userid = 1106 AND completed = 3) AND `difficulty_std` <= (SELECT AVG(difficulty_std) AS difficulty_std FROM beatmaps INNER JOIN scores_relax ON scores_relax.beatmap_md5 = beatmaps.beatmap_md5 WHERE scores_relax.userid = 1106 AND completed = 3)*1.5 AND `ranked` >= 2 ORDER BY RAND() LIMIT 1")
+	sql = glob.db.fetch("SELECT * FROM `beatmaps` WHERE `difficulty_std` >= (SELECT AVG(difficulty_std) AS difficulty_std FROM beatmaps INNER JOIN scores_relax FORCE INDEX(beatmap_md5) ON scores_relax.beatmap_md5 = beatmaps.beatmap_md5 WHERE scores_relax.userid = {userID} AND completed = 3) AND `difficulty_std` <= (SELECT AVG(difficulty_std) AS difficulty_std FROM beatmaps INNER JOIN scores_relax ON scores_relax.beatmap_md5 = beatmaps.beatmap_md5 WHERE scores_relax.userid = {userID} AND completed = 3)*1.5 AND `ranked` >= 2 ORDER BY RAND() LIMIT 1".format(userID=userID))
 		# Send request to LETS api
 	url = "{}/v1/pp?b={}".format(glob.conf.config["server"]["letsapiurl"].rstrip("/"), sql["beatmap_id"])
 	resp = requests.get(url, timeout=2)
@@ -1523,7 +1526,17 @@ def randomBeatmap(fro, chan, message):
 			return "Error in LETS API call ({}).".format(data["message"])
 		else:
 			raise exceptions.apiException()
-	msg = "[https://ainu.pw/b/{beatmapID} {beatmapSong}] - 95%: {pp95}pp | 98%: {pp98}pp | 99% {pp99}pp | 100%: {pp100}pp | Stars: {difficulty} / BPM: {bpm} / AR: {ar}".format(beatmapID=sql["beatmap_id"], beatmapSong=sql["song_name"], difficulty=round(sql["difficulty_std"], 2), bpm=sql["bpm"], ar=data["ar"], pp100=round(data["pp"][0], 2), pp99=round(data["pp"][1], 2), pp98=round(data["pp"][2], 2), pp95=round(data["pp"][3], 2))
+	msg = "[https://ainu.pw/b/{beatmapID} {beatmapSong}] ([osu://dl/{beatmapSetID} osu!direct]) - 95%: {pp95}pp | 98%: {pp98}pp | 99% {pp99}pp | 100%: {pp100}pp | Stars: {difficulty} / BPM: {bpm} / AR: {ar}".format(
+			beatmapID=sql["beatmap_id"],
+			beatmapSetID=sql["beatmapset_id"],
+			beatmapSong=sql["song_name"],
+			difficulty=round(sql["difficulty_std"], 2),
+			bpm=sql["bpm"],
+			ar=data["ar"],
+			pp100=round(data["pp"][0], 2),
+			pp99=round(data["pp"][1], 2),
+			pp98=round(data["pp"][2], 2),
+			pp95=round(data["pp"][3], 2))
 	return msg
 
 """
