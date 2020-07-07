@@ -14,7 +14,9 @@ from constants import exceptions, slotStatuses, matchModModes, matchTeams, match
 from common.constants import gameModes
 from common.constants import privileges
 from constants import serverPackets
+from events import logoutEvent
 from helpers import aobaHelper
+from helpers import countryHelper
 from helpers import systemHelper
 from objects import fokabot
 from objects import glob
@@ -55,6 +57,24 @@ Must have fro, chan and messages as arguments
 return the message or **False** if there's no response by the bot
 TODO: Change False to None, because False doesn't make any sense
 """
+def changeLocation(fro, chan, message):
+	location = message[0].upper()
+	user = glob.tokens.getTokenFromUsername(userUtils.safeUsername(fro), safe=True)
+	country = countryHelper.getCountryID(location)
+	if user is not None:
+		permissions = user.privileges
+		if bool(permissions & privileges.USER_DONOR):
+			if location in countryHelper.countryCodes:
+					userUtils.setCountry(userUtils.getID(fro), location)
+					user.country = countryHelper.getCountryID(location)
+					user.enqueue(serverPackets.notification("Your country has been changed, please relogin!"))
+					user.silentKick()
+					return "Your country has been changed"
+			else:
+				return "This isn't a country code."
+		else:
+			return "Bad luck, you're not a donator, therefore you can't do that."
+
 def instantRestart(fro, chan, message):
 	glob.streams.broadcast("main", serverPackets.notification("We are restarting Bancho. Be right back!"))
 	systemHelper.scheduleShutdown(0, True, delay=5)
@@ -1594,6 +1614,9 @@ commands = [
 		"syntax": "<rank/unrank> <set/map> <ID>",
 		"privileges": privileges.ADMIN_MANAGE_BEATMAPS,
 		"callback": editMap
+	}, {
+		"trigger": "!country",
+		"callback": changeLocation
 	}, {
 		"trigger": "!mm00",
 		"callback": mm00

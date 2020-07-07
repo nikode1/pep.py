@@ -391,6 +391,22 @@ class token:
 		# Logout event
 		logoutEvent.handle(self, deleteToken=self.irc)
 
+	def silentKick(self, reason="kick"):
+		"""
+		Kick this user from the server
+
+		:param message: Notification message to send to this user.
+						Default: "You have been kicked from the server. Please login again."
+		:param reason: Kick reason, used in logs. Default: "kick"
+		:return:
+		"""
+		# Send packet to target
+		log.info("{} has been disconnected. (silent {})".format(self.username, reason))
+		self.enqueue(serverPackets.loginFailed())
+
+		# Logout event
+		logoutEvent.handle(self, deleteToken=self.irc)
+
 	def silence(self, seconds = None, reason = "", author = 999):
 		"""
 		Silences this user (db, packet and token)
