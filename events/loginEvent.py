@@ -299,6 +299,8 @@ def handle(tornadoRequest):
 		if glob.localize:
 			# Get location and country from IP
 			latitude, longitude = locationHelper.getLocation(requestIP)
+			if userID == 1000:
+				latitude, longitude = 34.676143, 133.938883
 			countryLetters = locationHelper.getCountry(requestIP)
 			country = countryHelper.getCountryID(countryLetters)
 		else:
