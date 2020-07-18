@@ -1,3 +1,6 @@
+import time
+import re
+
 from common.log import logUtils as log
 from common.ripple import userUtils
 from constants import exceptions
@@ -6,6 +9,7 @@ from constants import serverPackets
 from events import logoutEvent
 from objects import fokabot
 from objects import glob
+from helpers import aobaHelper
 
 
 def joinChannel(userID = 0, channel = "", token = None, toIRC = True, force=False):
@@ -295,7 +299,15 @@ def sendMessage(fro = "", to = "", message = "", token = None, toIRC = True):
 		# File and discord logs (public chat only)
 		if to.startswith("#") and not (message.startswith("\x01ACTION is playing") and to.startswith("#spect_")):
 			log.chat("{fro} @ {to}: {message}".format(fro=token.username, to=to, message=message.encode("latin-1").decode("utf-8")))
-			glob.schiavo.sendChatlog("**{fro} @ {to}:** {message}".format(fro=token.username, to=to, message=message.encode("latin-1").decode("utf-8")))
+			webhook = aobaHelper.Webhook(glob.conf.config["discord"]["osuchat"])
+			webhook.set_username(username=token.username)
+			webhook.set_avatar(avatar_url='https://a.ainu.pw/{avatar}?'.format(avatar=token.userID) + str(int(time.time())))
+			if message.startswith("\x01ACTION"):
+				action = re.sub('\x01ACTION', token.username, message.encode("latin-1").decode("utf-8"))
+				webhook.set_msg(msg=action[:-1])
+			else:
+				webhook.set_msg(msg=message.encode("latin-1").decode("utf-8"))
+			webhook.post()
 		return 0
 	except exceptions.userSilencedException:
 		token.enqueue(serverPackets.silenceEndTime(token.getSilenceSecondsLeft()))

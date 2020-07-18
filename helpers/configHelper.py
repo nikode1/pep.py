@@ -77,6 +77,7 @@ class config:
 			parsedConfig.get("discord", "anticheat")
 			parsedConfig.get("discord", "ranked")
 			parsedConfig.get("discord", "announcement")
+			parsedConfig.get("discord", "osuchat")
 
 			parsedConfig.get("datadog", "enable")
 			parsedConfig.get("datadog", "apikey")
@@ -147,6 +148,7 @@ class config:
 		self.config.set("discord", "anticheat", "")
 		self.config.set("discord", "ranked", "")
 		self.config.set("discord", "announcement", "")
+		self.config.set("discord", "osuchat", "")
 
 		self.config.add_section("datadog")
 		self.config.set("datadog", "enable", "0")
