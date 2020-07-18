@@ -296,9 +296,8 @@ def sendMessage(fro = "", to = "", message = "", token = None, toIRC = True):
 			if fokaMessage:
 				sendMessage(glob.BOT_NAME, to if isChannel else fro, fokaMessage)
 
-		# File and discord logs (public chat only)
-		if to.startswith("#") and not (message.startswith("\x01ACTION is playing") and to.startswith("#spect_")):
-			log.chat("{fro} @ {to}: {message}".format(fro=token.username, to=to, message=message.encode("latin-1").decode("utf-8")))
+		# osu! Chat to Discord
+		if to == "#osu":
 			webhook = aobaHelper.Webhook(glob.conf.config["discord"]["osuchat"])
 			webhook.set_username(username=token.username)
 			webhook.set_avatar(avatar_url='https://a.ainu.pw/{avatar}?'.format(avatar=token.userID) + str(int(time.time())))
@@ -308,6 +307,11 @@ def sendMessage(fro = "", to = "", message = "", token = None, toIRC = True):
 			else:
 				webhook.set_msg(msg=message.encode("latin-1").decode("utf-8"))
 			webhook.post()
+			return 0
+
+		# File logs (public chat only)
+		if to.startswith("#") and not (message.startswith("\x01ACTION is playing") and to.startswith("#spect_")):
+			log.chat("{fro} @ {to}: {message}".format(fro=token.username, to=to, message=message.encode("latin-1").decode("utf-8")))
 		return 0
 	except exceptions.userSilencedException:
 		token.enqueue(serverPackets.silenceEndTime(token.getSilenceSecondsLeft()))
