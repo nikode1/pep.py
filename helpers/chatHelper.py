@@ -302,10 +302,10 @@ def sendMessage(fro = "", to = "", message = "", token = None, toIRC = True):
 			webhook.set_username(username=token.username)
 			webhook.set_avatar(avatar_url='https://a.ainu.pw/{avatar}?'.format(avatar=token.userID) + str(int(time.time())))
 			if message.startswith("\x01ACTION"):
-				action = re.sub("@", "", re.sub('\x01ACTION', token.username, message.encode("latin-1").decode("utf-8"))[:-1])
+				action = re.sub("@", "(@)", re.sub('\x01ACTION', token.username, message.encode("latin-1").decode("utf-8"))[:-1])
 				webhook.set_msg(msg=action)
 			else:
-				webhook.set_msg(msg=re.sub("@", "", message.encode("latin-1").decode("utf-8")))
+				webhook.set_msg(msg=re.sub("@", "(@)", message.encode("latin-1").decode("utf-8")))
 			webhook.post()
 			return 0
 
