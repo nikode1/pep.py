@@ -1005,7 +1005,8 @@ def multiplayer(fro, chan, message):
 		else:
 			startTime = int(message[1])
 
-		force = False if len(message) < 3 else message[2].lower() == "force"
+		# kotrik found the fix
+		force = False if len(message) < 2 else message[1].lower() == "force"
 		_match = glob.matches.matches[getMatchIDFromChannel(chan)]
 
 		# Force everyone to ready
