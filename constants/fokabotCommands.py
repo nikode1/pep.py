@@ -451,7 +451,7 @@ def getPPMessage(userID, just_data = False):
 		currentAcc = token.tillerino[2]
 
 		# Send request to LETS api
-		url = "{}/v1/pp?b={}&m={}".format(glob.conf.config["server"]["letsapiurl"].rstrip("/"), currentMap, currentMods)
+		url = "{}/v1/pp?b={}&m={}&a={}".format(glob.conf.config["server"]["letsapiurl"].rstrip("/"), currentMap, currentMods, currentAcc)
 		resp = requests.get(url, timeout=10)
 		try:
 			assert resp is not None
@@ -481,7 +481,7 @@ def getPPMessage(userID, just_data = False):
 		if currentAcc == -1:
 			msg += "95%: {pp95}pp | 98%: {pp98}pp | 99% {pp99}pp | 100%: {pp100}pp".format(pp100=round(data["pp"][0], 2), pp99=round(data["pp"][1], 2), pp98=round(data["pp"][2], 2), pp95=round(data["pp"][3], 2))
 		else:
-			msg += "{acc:.2f}%: {pp}pp".format(acc=token.tillerino[2], pp=round(data["pp"][0], 2))
+			msg += "{acc:.2f}%: {pp}pp".format(acc=currentAcc, pp=round(data["pp"][-1], 2))
 
 		originalAR = data["ar"]
 		# calc new AR if HR/EZ is on
@@ -637,6 +637,9 @@ def tillerinoAcc(fro, chan, message):
 
 		# Convert acc to float
 		acc = float(message[0])
+		if acc <= 0 or acc > 100:
+			return "Acc must be greater than 0 and less than 100."
+
 
 		# Set new tillerino list acc value
 		token.tillerino[2] = acc
@@ -644,7 +647,7 @@ def tillerinoAcc(fro, chan, message):
 		# Return tillerino message for that beatmap with mods
 		return getPPMessage(userID)
 	except ValueError:
-		return "Invalid acc value"
+		return "Invalid acc value: acc must be a number, such as: 99.80 or 99"
 	except:
 		return False
 
@@ -1763,12 +1766,11 @@ commands = [
 	}, {
 		"trigger": "!bloodcat",
 		"callback": bloodcat
+	}, {
+		"trigger": "!acc",
+		"callback": tillerinoAcc,
+		"syntax": "<accuarcy>"
 	}
-	#
-	#	"trigger": "!acc",
-	#	"callback": tillerinoAcc,
-	#	"syntax": "<accuarcy>"
-	#}
 ]
 
 # Commands list default values
