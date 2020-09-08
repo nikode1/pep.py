@@ -5,7 +5,7 @@ from common.log import logUtils as log
 from constants import serverPackets
 from helpers import chatHelper as chat
 from objects import glob
-from ainu import utils as sim
+from ainu import utils as sim # too bad, this is ainu privated :older_man:
 
 
 def handle(userToken, _=None, deleteToken=True):

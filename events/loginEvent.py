@@ -16,7 +16,7 @@ from helpers import countryHelper
 from helpers import locationHelper
 from helpers import kotrikhelper
 from objects import glob
-from ainu import utils as sim
+from ainu import utils as sim # too bad, this is ainu privated :older_man:
 
 curryear = int(datetime.now().year)
 today = datetime.date(datetime(curryear, int(datetime.now().month), int(datetime.now().day)))
