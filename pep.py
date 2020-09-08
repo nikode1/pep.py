@@ -56,7 +56,8 @@ def make_app():
 		(r"/api/v1/ciTrigger", ciTriggerHandler.handler),
 		(r"/api/v1/verifiedStatus", apiVerifiedStatusHandler.handler),
 		(r"/api/v1/fokabotMessage", apiFokabotMessageHandler.handler),
-		(r"/api/v2/clients/.*", apiDeltaClients.handler)
+		# prevent ddos endpoint >:( (thank you kotrik for telling me)
+  		#(r"/api/v2/clients/.*", apiDeltaClients.handler)
 	])
 
 
@@ -343,7 +344,7 @@ if __name__ == "__main__":
 		}).start()
 
 		# Start tornado
-		glob.application.listen(serverPort)
+		glob.application.listen(serverPort, address="127.0.0.1")
 		tornado.ioloop.IOLoop.instance().start()
 	finally:
 		system.dispose()

@@ -296,7 +296,20 @@ def sendMessage(fro = "", to = "", message = "", token = None, toIRC = True):
 			if fokaMessage:
 				sendMessage(glob.BOT_NAME, to if isChannel else fro, fokaMessage)
 
-		# File and discord logs (public chat only)
+		# osu! Chat to Discord
+		if to == "#osu":
+			webhook = aobaHelper.Webhook(glob.conf.config["discord"]["osuchat"])
+			webhook.set_username(username=token.username)
+			webhook.set_avatar(avatar_url='https://a.ainu.pw/{avatar}?'.format(avatar=token.userID) + str(int(time.time())))
+			if message.startswith("\x01ACTION"):
+				action = re.sub("@", "(@)", re.sub('\x01ACTION', "*"+token.username, message.encode("latin-1").decode("utf-8"))[:-1])
+				webhook.set_msg(msg=action)
+			else:
+				webhook.set_msg(msg=re.sub("@", "(@)", message.encode("latin-1").decode("utf-8")))
+			webhook.post()
+			return 0
+
+		# File logs (public chat only)
 		if to.startswith("#") and not (message.startswith("\x01ACTION is playing") and to.startswith("#spect_")):
 			log.chat("{fro} @ {to}: {message}".format(fro=token.username, to=to, message=message.encode("latin-1").decode("utf-8")))
 			glob.schiavo.sendChatlog("**{fro} @ {to}:** {message}".format(fro=token.username, to=to, message=message.encode("latin-1").decode("utf-8")))
@@ -306,9 +319,9 @@ def sendMessage(fro = "", to = "", message = "", token = None, toIRC = True):
 					webhook = aobaHelper.Webhook(glob.conf.config["discord"]["osuchat"])
 					webhook.set_username(username=token.username)
 					webhook.set_avatar(avatar_url='https://a.ainu.pw/{avatar}?'.format(avatar=token.userID) + str(int(time.time())))
-					formattedmsg = re.sub("([\*|\_|~]{1,2})([^\*|\_|~]+)([\*|\_|~]{1,2})", "/", message.encode("latin-1").decode("utf-8"))[:-1])
+					formattedmsg = re.sub("([\*|\_|~]{1,2})([^\*|\_|~]+)([\*|\_|~]{1,2})", "/", message.encode("latin-1").decode("utf-8"))[:-1]
 					if message.startswith("\x01ACTION"):
-						action = re.sub("@", "(@)", re.sub('\x01ACTION', "*"+token.username, formattedmsg)
+						action = re.sub("@", "(@)", re.sub('\x01ACTION', "*"+token.username, formattedmsg))
 						webhook.set_msg(msg=action)
 					else:
 						webhook.set_msg(msg=re.sub("@", "(@)", formattedmsg))

@@ -16,6 +16,7 @@ from helpers import countryHelper
 from helpers import locationHelper
 from helpers import kotrikhelper
 from objects import glob
+from ainu import utils as sim
 
 curryear = int(datetime.now().year)
 today = datetime.date(datetime(curryear, int(datetime.now().month), int(datetime.now().day)))
@@ -120,6 +121,7 @@ def handle(tornadoRequest):
 			glob.tokens.deleteOldTokens(userID)
 		if numericVersion < glob.conf.config["server"]["osuminver"]:
 			raise exceptions.forceUpdateException()
+
 		responseToken = glob.tokens.addToken(userID, requestIP, timeOffset=timeOffset, tournament=isTournament)
 		responseTokenString = responseToken.token
 
@@ -160,10 +162,8 @@ def handle(tornadoRequest):
 		if glob.restarting:
 			raise exceptions.banchoRestartingException()
 
-		"""
-		if userUtils.checkIfFlagged(userID):
+		if sim.checkIfFlagged(userID):
 			responseToken.enqueue(serverPackets.notification("Staff suspect you of cheat! You have 5 days to make a full pc startup liveplay, or you will get restricted and you'll have to wait a month to appeal!"))
-		"""
 
 		# Check If today is 4/20 (Peppy Day)
 		if today == peppyday:
@@ -268,6 +268,9 @@ def handle(tornadoRequest):
 
 		# Channel info end (before starting!?! wtf bancho?)
 		responseToken.enqueue(serverPackets.channelInfoEnd())
+  
+		# set user to online
+		sim.setUserOnline(userID, 1)
 		# Default opened channels
 		# TODO: Configurable default channels
 		chat.joinChannel(token=responseToken, channel="#osu")

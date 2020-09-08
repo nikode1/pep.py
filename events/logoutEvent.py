@@ -5,6 +5,7 @@ from common.log import logUtils as log
 from constants import serverPackets
 from helpers import chatHelper as chat
 from objects import glob
+from ainu import utils as sim
 
 
 def handle(userToken, _=None, deleteToken=True):
@@ -53,6 +54,8 @@ def handle(userToken, _=None, deleteToken=True):
 				"userID": userID,
 				"newUsername": newUsername.decode("utf-8")
 			}))
+
+		sim.setUserOnline(userID, 0)
 
 		# Console output
 		log.info("{} has been disconnected. (logout)".format(username))
