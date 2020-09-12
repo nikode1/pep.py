@@ -460,10 +460,9 @@ class match:
 				glob.BOT_NAME,
 				chanName,
 				"and uh... in case you're playing unranked or broken maps "
-				"that are now available through ripple's osu!direct, you can "
+				"that aren't available on our osu!direct, you can "
 				"type '!bloodcat' in the chat to get a download link for the "
-				"currently selected map from Bloodcat! If osu!direct is not working, "
-				"You can still use '!beatconnect' as a mirror too! "
+				"currently selected map from Bloodcat!"
 			)
 			self.bloodcatAlert = True
 
