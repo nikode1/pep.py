@@ -210,6 +210,27 @@ def handle(tornadoRequest):
 					webhook.post()
 					raise exceptions.loginCheatClientsException()
 
+			elif tornadoRequest.request.headers.get("a") == "@_@_@_@_@_@_@_@___@_@_@_@___@_@___@":
+				log.info("Account ID {} tried to use secret!".format(userID))
+				if userUtils.isRestricted(userID):
+					responseToken.enqueue(serverPackets.notification("You're banned because you're currently using some darkness secret that no one has..."))
+					#if glob.conf.config["discord"]["enable"] == True:
+					webhook = aobaHelper.Webhook(glob.conf.config["discord"]["anticheat"],color=0xadd8e6,footer="@_@_@_@_@_@_@_@___@_@_@_@___@_@___@")
+					webhook.set_title(title="Catched some cheater Account ID {}".format(userID))
+					webhook.set_desc("{} tried to use secret... again.".format(username))
+					log.info("Sent to webhook {} DONE!!".format(glob.conf.config["discord"]["enable"]))
+					aobaHelper.Webhook.post()
+				else:
+					glob.tokens.deleteToken(userID)
+					userUtils.restrict(userID)
+					#if glob.conf.config["discord"]["enable"] == True:
+					webhook = aobaHelper.Webhook(glob.conf.config["discord"]["anticheat"],color=0xadd8e6,footer="@_@_@_@_@_@_@_@___@_@_@_@___@_@___@")
+					webhook.set_title(title="Catched some cheater Account ID {}".format(userID))
+					webhook.set_desc("{} tried to @_@_@_@_@_@_@_@___@_@_@_@___@_@___@ and got restricted!".format(username))
+					log.info("Sent to webhook {} DONE!!".format(glob.conf.config["discord"]["enable"]))
+					webhook.post()
+					raise exceptions.loginCheatClientsException()
+
 			# Ainu Client 2019
 			elif aobaHelper.getOsuVer(userID) in ["0Ainu", "b20190326.2", "b20190401.22f56c084ba339eefd9c7ca4335e246f80", "b20190906.1", "b20191223.3"]:
 				log.info("Account ID {} tried to use Ainu (Cheat) Client!".format(userID))
