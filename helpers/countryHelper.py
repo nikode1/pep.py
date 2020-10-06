@@ -1,255 +1,257 @@
-# TODO: Update countries list
 countryCodes = {
-	"IO": 104,
-	"PS": 178,
-	"LV": 132,
-	"GI": 82,
-	"MZ": 154,
-	"BZ": 37,
-	"TR": 217,
-	"CV": 52,
-	"BI": 26,
-	"CM": 47,
-	"JM": 109,
-	"GU": 91,
-	"CY": 54,
-	"BW": 35,
-	"KW": 120,
-	"MY": 153,
-	"SH": 193,
-	"PG": 171,
-	"PW": 180,
-	"FM": 72,
-	"HR": 97,
-	"YT": 238,
-	"JO": 110,
-	"HK": 94,
-	"MW": 151,
-	"AZ": 18,
-	"IQ": 105,
-	"DO": 60,
-	"RS": 239,
-	"PK": 173,
-	"BR": 31,
-	"SN": 199,
-	"LI": 126,
-	"CD": 40,
-	"MG": 137,
-	"PE": 169,
-	"CK": 45,
-	"SJ": 195,
-	"SZ": 205,
-	"PM": 175,
-	"LY": 133,
-	"BV": 34,
-	"KN": 117,
-	"GR": 88,
-	"CC": 39,
-	"IN": 103,
-	"DZ": 61,
-	"SK": 196,
-	"VC": 229,
-	"GW": 92,
-	"BQ": 0,
-	"UM": 224,
-	"AF": 5,
-	"TZ": 221,
-	"AO": 11,
-	"AW": 17,
-	"AE": 0,
-	"PF": 170,
-	"MK": 139,
-	"AR": 13,
-	"AQ": 12,
-	"SL": 197,
-	"HT": 98,
-	"NF": 158,
-	"SS": 190,
-	"MU": 149,
-	"VA": 228,
-	"EC": 62,
-	"LC": 125,
-	"MX": 152,
-	"CW": 0,
-	"LT": 130,
-	"GN": 85,
-	"ZM": 241,
-	"LU": 131,
-	"NG": 159,
-	"MS": 147,
-	"MV": 150,
-	"DJ": 57,
-	"MQ": 145,
-	"IE": 101,
-	"CG": 40,
-	"LK": 127,
-	"NZ": 166,
-	"KR": 119,
-	"RO": 184,
-	"KE": 112,
-	"MF": 252,
-	"SR": 201,
-	"PA": 168,
-	"KI": 115,
-	"NL": 161,
-	"DM": 59,
-	"TC": 206,
-	"KZ": 122,
-	"CR": 50,
-	"NR": 164,
-	"UZ": 227,
-	"GE": 79,
-	"KP": 118,
-	"PN": 176,
-	"BY": 36,
-	"NI": 160,
-	"IR": 106,
-	"VI": 232,
-	"MA": 134,
-	"NO": 162,
-	"PT": 179,
-	"PY": 181,
-	"CU": 51,
-	"SC": 189,
-	"TT": 218,
-	"CA": 38,
-	"IT": 108,
-	"GF": 80,
-	"CN": 48,
-	"GQ": 87,
-	"LR": 128,
-	"BA": 19,
-	"TD": 207,
-	"AU": 16,
-	"MM": 141,
-	"HU": 99,
-	"EG": 64,
-	"JE": 250,
-	"IL": 102,
-	"BL": 251,
-	"BS": 32,
-	"SE": 191,
-	"MC": 135,
-	"SD": 190,
-	"ZA": 240,
-	"IM": 249,
-	"MO": 143,
-	"GL": 83,
-	"TV": 219,
-	"FK": 71,
-	"GB": 77,
-	"NA": 155,
-	"AM": 9,
-	"WS": 236,
-	"UY": 226,
-	"EE": 63,
-	"TL": 216,
-	"BT": 33,
-	"VU": 234,
-	"WF": 235,
-	"AX": 247,
-	"TK": 212,
-	"MN": 142,
-	"SB": 188,
-	"XK": 0,
-	"BH": 25,
-	"ID": 100,
-	"SV": 203,
-	"TG": 209,
-	"BF": 23,
-	"GG": 248,
-	"IS": 107,
-	"FJ": 70,
-	"KG": 113,
-	"BD": 21,
-	"ZW": 243,
-	"AI": 7,
-	"NP": 163,
-	"KH": 114,
-	"BJ": 27,
-	"EH": 65,
-	"BE": 22,
-	"SM": 198,
-	"CX": 53,
-	"TW": 220,
-	"KM": 116,
-	"AS": 14,
-	"AT": 15,
-	"LA": 123,
-	"US": 225,
-	"SY": 204,
-	"SO": 200,
-	"AD": 3,
-	"OM": 167,
-	"GT": 90,
-	"CF": 41,
-	"GY": 93,
-	"VN": 233,
-	"VE": 230,
-	"PH": 172,
-	"TM": 213,
-	"VG": 231,
-	"GP": 86,
-	"CZ": 55,
-	"GM": 84,
-	"MR": 146,
-	"TN": 214,
-	"SI": 194,
-	"TO": 215,
-	"UG": 223,
-	"SA": 187,
-	"ST": 202,
-	"QA": 182,
-	"FI": 69,
-	"CO": 49,
-	"AG": 6,
-	"PR": 177,
-	"PL": 174,
-	"GH": 81,
-	"GA": 76,
-	"TJ": 211,
-	"SX": 0,
-	"KY": 121,
-	"BO": 30,
-	"UA": 222,
-	"MP": 144,
-	"TF": 208,
-	"LB": 124,
-	"MT": 148,
-	"FR": 74,
-	"JP": 111,
-	"RU": 185,
-	"RW": 186,
-	"NC": 156,
-	"NE": 157,
-	"BN": 29,
-	"CI": 44,
-	"TH": 210,
-	"DE": 56,
-	"ET": 68,
-	"FO": 73,
-	"YE": 237,
-	"DK": 58,
-	"BG": 24,
-	"GS": 89,
-	"HM": 95,
-	"BB": 20,
-	"BM": 28,
-	"ML": 140,
-	"SG": 192,
-	"GD": 78,
-	"NU": 165,
-	"RE": 183,
-	"LS": 129,
-	"ER": 66,
-	"ME": 242,
-	"HN": 96,
-	"AL": 8,
-	"CH": 43,
-	"MD": 136,
-	"ES": 67,
-	"CL": 46,
-	"MH": 138
+	"XX": 0, # No/Unknown Country - Doesn't know where is it
+	"AP": 1, # Oceania
+	"EU": 2, # Europe
+	"AD": 3, # Andorra
+	"AE": 4, # UAE - United Arab Emirates
+	"AF": 5, # Afghanistan
+	"AG": 6, # Antigua
+	"AI": 7, # Anguilla
+	"AL": 8, # Albania
+	"AM": 9, # Armenia
+	"AN": 10, # Netherlands Antilles
+	"AO": 11, # Angola
+	"AQ": 12, # Antarctica
+	"AR": 13, # Argentina
+	"AS": 14, # American Samoa
+	"AT": 15, # Austria
+	"AU": 16, # Australia
+	"AW": 17, # Aruba
+	"AZ": 18, # Azerbaijan
+	"BA": 19, # Bosnia
+	"BB": 20, # Barbados
+	"BD": 21, # Bangladesh
+	"BE": 22, # Belgium
+	"BF": 23, # Burkina Faso
+	"BG": 24, # Bulgaria
+	"BH": 25, # Bahrain
+	"BI": 26, # Burundi
+	"BJ": 27, # Benin
+	"BM": 28, # Bermuda
+	"BN": 29, # Brunei Darussalam
+	"BO": 30, # Bolivia
+	"BR": 31, # Brazil
+	"BS": 32, # Bahamas
+	"BT": 33, # Bhutan
+	"BV": 34, # Bouvet Island
+	"BW": 35, # Botswana
+	"BY": 36, # Belarus
+	"BZ": 37, # Belize
+	"CA": 38, # Canada
+	"CC": 39, # Cocos Islands
+	"CD": 40, # Congo
+	"CF": 41, # Central African Republic
+	"CG": 42, # Congo, Democratic Republic of
+	"CH": 43, # Switzerland
+	"CI": 44, # Cote D'Ivoire
+	"CK": 45, # Cook Islands
+	"CL": 46, # Chile
+	"CM": 47, # Cameroon
+	"CN": 48, # China
+	"CO": 49, # Colombia
+	"CR": 50, # Costa Rica
+	"CU": 51, # Cuba
+	"CV": 52, # Cape Verd
+	"CX": 53, # Christmas Island
+	"CY": 54, # Cyprus
+	"CZ": 55, # Czech Republic
+	"DE": 56, # Germany
+	"DJ": 57, # Djibouti
+	"DK": 58, # Denmark
+	"DM": 59, # Dominica
+	"DO": 60, # Dominican Republic
+	"DZ": 61, # Algeria
+	"EC": 62, # Ecuador
+	"EE": 63, # Estonia
+	"EG": 64, # Egypt
+	"EH": 65, # Western Sahara
+	"ER": 66, # Eritrea
+	"ES": 67, # Spain
+	"ET": 68, # Ethiopia
+	"FI": 69, # Finland
+	"FJ": 70, # Fiji
+	"FK": 71, # Falkland Islands
+	"FM": 72, # Micronesia, Federated States of
+	"FO": 73, # Faroe Islands
+	"FR": 74, # France
+	"FX": 75, # France, Metropolitan
+	"GA": 76, # Gabon
+	"GB": 77, # United Kingdom
+	"GD": 78, # Grenada
+	"GE": 79, # Georgia
+	"GF": 80, # French Guiana
+	"GH": 81, # Ghana
+	"GI": 82, # Gibraltar
+	"GL": 83, # Greenland
+	"GM": 84, # Gambia
+	"GN": 85, # Guinea
+	"GP": 86, # Guadeloupe
+	"GQ": 87, # Equatorial Guinea
+	"GR": 88, # Greece
+	"GS": 89, # South Georgia
+	"GT": 90, # Guatemala
+	"GU": 91, # Guam
+	"GW": 92, # Guinea-Bissau
+	"GY": 93, # Guyana
+	"HK": 94, # Hong Kong
+	"HM": 95, # Heard Island
+	"HN": 96, # Honduras
+	"HR": 97, # Croatia
+	"HT": 98, # Haiti
+	"HU": 99, # Hungary
+	"ID": 100, # Indonesia
+	"IE": 101, # Ireland
+	"IL": 102, # Israel
+	"IN": 103, # India
+	"IO": 104, # British Indian Ocean Territory
+	"IQ": 105, # Iraq
+	"IR": 106, # Iran, Islamic Republic of
+	"IS": 107, # Iceland
+	"IT": 108, # Italy
+	"JM": 109, # Jamaica
+	"JO": 110, # Jordan
+	"JP": 111, # Japan
+	"KE": 112, # Kenya
+	"KG": 113, # Kyrgyzstan
+	"KH": 114, # Cambodia
+	"KI": 115, # Kiribati
+	"KM": 116, # Comoros
+	"KN": 117, # St. Kitts and Nevis
+	"KP": 118, # Korea, Democratic People's Republic of
+	"KR": 119, # Korea
+	"KW": 120, # Kuwait
+	"KY": 121, # Cayman Islands
+	"KZ": 122, # Kazakhstan
+	"LA": 123, # Lao
+	"LB": 124, # Lebanon
+	"LC": 125, # St. Lucia
+	"LI": 126, # Liechtenstein
+	"LK": 127, # Sri Lanka
+	"LR": 128, # Liberia
+	"LS": 129, # Lesotho
+	"LT": 130, # Lithuania
+	"LU": 131, # Luxembourg
+	"LV": 132, # Latvia
+	"LY": 133, # Libyan Arab Jamahiriya
+	"MA": 134, # Morocco
+	"MC": 135, # Monaco
+	"MD": 136, # Moldova, Republic of
+	"MG": 137, # Madagascar
+	"MH": 138, # Marshall Islands
+	"MK": 139, # Macedonia, the Former Yugoslav Republic of
+	"ML": 140, # Mali
+	"MM": 141, # Myanmar
+	"MN": 142, # Mongolia
+	"MO": 143, # Macau
+	"MP": 144, # Northern Mariana Islands
+	"MQ": 145, # Martinique
+	"MR": 146, # Mauritania
+	"MS": 147, # Montserrat
+	"MT": 148, # Malta
+	"MU": 149, # Mauritius
+	"MV": 150, # Maldives
+	"MW": 151, # Malawi
+	"MX": 152, # Mexico
+	"MY": 153, # Malaysia
+	"MZ": 154, # Mozambique
+	"NA": 155, # Namibia
+	"NC": 156, # New Caledonia
+	"NE": 157, # Niger
+	"NF": 158, # Norfolk Island
+	"NG": 159, # Nigeria
+	"NI": 160, # Nicaragua
+	"NL": 161, # Netherlands
+	"NO": 162, # Norway
+	"NP": 163, # Nepal
+	"NR": 164, # Nauru
+	"NU": 165, # Niue
+	"NZ": 166, # New Zealand
+	"OM": 167, # Oman
+	"PA": 168, # Panama
+	"PE": 169, # Peru
+	"PF": 170, # French Polynesia
+	"PG": 171, # Papua New Guinea
+	"PH": 172, # Philippines
+	"PK": 173, # Pakistan
+	"PL": 174, # Poland
+	"PM": 175, # St. Pierre
+	"PN": 176, # Pitcairn
+	"PR": 177, # Puerto Rico
+	"PS": 178, # Palestinian Territory
+	"PT": 179, # Portugal
+	"PW": 180, # Palau
+	"PY": 181, # Paraguay
+	"QA": 182, # Qatar
+	"RE": 183, # Reunion
+	"RO": 184, # Romania
+	"RU": 185, # Russian Federation
+	"RW": 186, # Rwanda
+	"SA": 187, # Saudi Arabia
+	"SB": 188, # Solomon Islands
+	"SC": 189, # Seychelles
+	"SD": 190, # Sudan
+	"SE": 191, # Sweden
+	"SG": 192, # Singapore
+	"SH": 193, # St. Helena
+	"SI": 194, # Slovenia
+	"SJ": 195, # Svalbard and Jan Mayen
+	"SK": 196, # Slovakia
+	"SL": 197, # Sierra Leone
+	"SM": 198, # San Marino
+	"SN": 199, # Senegal
+	"SO": 200, # Somalia
+	"SR": 201, # Suriname
+	"ST": 202, # Sao Tome and Principe
+	"SV": 203, # El Salvador
+	"SY": 204, # Syrian Arab Republic
+	"SZ": 205, # Swaziland
+	"TC": 206, # Turks and Caicos Islands
+	"TD": 207, # Chad
+	"TF": 208, # French Southern Territories
+	"TG": 209, # Togo
+	"TH": 210, # Thailand
+	"TJ": 211, # Tajikistan
+	"TK": 212, # Tokelau
+	"TM": 213, # Turkmenistan
+	"TN": 214, # Tunisia
+	"TO": 215, # Tonga
+	"TL": 216, # Timor-Leste
+	"TR": 217, # Turkey
+	"TT": 218, # Trinidad and Tobago
+	"TV": 219, # Tuvalu
+	"TW": 220, # Taiwan
+	"TZ": 221, # Tanzania
+	"UA": 222, # Ukraine
+	"UG": 223, # Uganda
+	"UM": 224, # US (Island)
+	"US": 225, # United States
+	"UY": 226, # Uruguay
+	"UZ": 227, # Uzbekistan
+	"VA": 228, # Holy See
+	"VC": 229, # St. Vincent
+	"VE": 230, # Venezuela
+	"VG": 231, # Virgin Islands, British
+	"VI": 232, # Virgin Islands, U.S.
+	"VN": 233, # Vietnam
+	"VU": 234, # Vanuatu
+	"WF": 235, # Wallis and Futuna
+	"WS": 236, # Samoa
+	"YE": 237, # Yemen
+	"YT": 238, # Mayotte
+	"RS": 239, # Serbia
+	"ZA": 240, # South Africa
+	"ZM": 241, # Zambia
+	"ME": 242, # Montenegro
+	"ZW": 243, # Zimbabwe
+	"A1": 244, # Unknown - Anonymous Proxy
+	"A2": 245, # Satellite Provider
+	"O1": 246, # Other
+	"AX": 247, # Aland Islands
+	"GG": 248, # Guernsey
+	"IM": 249, # Isle of Man
+	"JE": 250, # Jersey
+	"BL": 251, # St. Barthelemy
+	"MF": 252 # Saint Martin
 }
 
 def getCountryID(code):

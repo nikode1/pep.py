@@ -60,6 +60,7 @@ class config:
 			parsedConfig.get("server", "letsapiurl")
 			parsedConfig.get("server", "deltaurl")
 			parsedConfig.get("server", "publicdelta")
+			parsedConfig.get("server", "osuminver")
 
 			parsedConfig.get("cheesegull", "apiurl")
 			parsedConfig.get("cheesegull", "apikey")
@@ -76,6 +77,7 @@ class config:
 			parsedConfig.get("discord", "anticheat")
 			parsedConfig.get("discord", "ranked")
 			parsedConfig.get("discord", "announcement")
+			parsedConfig.get("discord", "osuchat")
 
 			parsedConfig.get("datadog", "enable")
 			parsedConfig.get("datadog", "apikey")
@@ -125,6 +127,7 @@ class config:
 		self.config.set("server", "letsapiurl", "http://127.0.0.1:5002/letsapi")
 		self.config.set("server", "deltaurl", "delta.ppy.sh")
 		self.config.set("server", "publicdelta", "0")
+		self.config.set("server", "osuminver", "0")
 
 		self.config.add_section("cheesegull")
 		self.config.set("cheesegull", "apiurl", "https://storage.ainu.pw/api")
@@ -145,6 +148,7 @@ class config:
 		self.config.set("discord", "anticheat", "")
 		self.config.set("discord", "ranked", "")
 		self.config.set("discord", "announcement", "")
+		self.config.set("discord", "osuchat", "")
 
 		self.config.add_section("datadog")
 		self.config.set("datadog", "enable", "0")

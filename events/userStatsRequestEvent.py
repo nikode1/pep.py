@@ -12,6 +12,7 @@ def handle(userToken, packetData):
 		log.warning("Received userStatsRequest with length > 32")
 		return
 
+	#log.info(packetData)
 	for i in packetData["users"]:
 		log.debug("Sending stats for user {}".format(i))
 

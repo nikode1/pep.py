@@ -4,6 +4,7 @@ from common.ripple import userUtils
 from constants import dataTypes
 from constants import packetIDs
 from constants import userRanks
+from helpers import countryHelper
 from helpers import packetHelper
 from objects import glob
 
@@ -93,16 +94,13 @@ def userPanel(userID, force = False):
 	# Get user data
 	username = userToken.username
 	# Custom Timezone
-	if userID in (1000, 1106):
+	if userID in (2, 1000, 1001, 1106):
 		timezone = 24+9
 	else:
 		timezone = 24+userToken.timeOffset
-	# Custom Countries for Users
-	# 111 = Japan
-	if userID in (1000, 1106):
-		country = 111
-	else:
-		country = userToken.country
+	country = userToken.country
+	if userUtils.isInPrivilegeGroup(userID, "donor"):
+		country = countryHelper.getCountryID(userUtils.getCountry(userID))
 	gameRank = userToken.gameRank
 	latitude = userToken.getLatitude()
 	longitude = userToken.getLongitude()
@@ -289,7 +287,7 @@ def matchAbort():
 	return packetHelper.buildPacket(packetIDs.server_matchAbort)
 
 def switchServer(address):
-	return packetHelper.buildPacket(packetIDs.server_switchServer, [[address, dataTypes.STRING]])
+	return packetHelper.buildPacket(packetIDs.server_switchTourneyServer, [[address, dataTypes.STRING]])
 
 """ Other packets """
 def notification(message):
@@ -299,4 +297,13 @@ def banchoRestart(msUntilReconnection):
 	return packetHelper.buildPacket(packetIDs.server_restart, [[msUntilReconnection, dataTypes.UINT32]])
 
 def rtx(message):
-	return packetHelper.buildPacket(0x69, [[message, dataTypes.STRING]])
+	return packetHelper.buildPacket(packetIDs.server_rtx, [[message, dataTypes.STRING]])
+
+def meguminEXPLOSION():
+	return packetHelper.buildPacket(packetIDs.server_ping)
+
+def chatAttention():
+	return packetHelper.buildPacket(packetIDs.server_getAttention)
+
+def togglePM():
+	return packetHelper.buildPacket(packetIDs.server_userToggleBlockNonFriendPM)

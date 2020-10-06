@@ -1,5 +1,6 @@
 **/__pycache__
 **/build
+ainu
 config.ini
 filters.txt
 .data
@@ -7,4 +8,7 @@ filters.txt
 redistest.py
 *.c
 *.so
+*.pyd
+*.html
 .pyenv
+cython_setup.bat

@@ -54,7 +54,6 @@ class token:
 		self.joinedChannels = []
 		self.ip = ip
 		self.country = 0
-		self.location = [0,0]
 		self.awayMessage = ""
 		self.sentAway = []
 		self.matchID = -1
@@ -66,14 +65,8 @@ class token:
 		self.spamRate = 0
 
 		# Stats cache
-		if userID == 1000:
-			self.actionID = actions.WATCHING
-		else:
-			self.actionID = actions.IDLE
-		if userID == 1000:
-			self.actionText = "HentaiHaven"
-		else:
-			self.actionText = ""
+		self.actionID = actions.IDLE
+		self.actionText = ""
 		self.actionMd5 = ""
 		self.actionMods = 0
 		self.gameMode = gameModes.STD
@@ -88,6 +81,9 @@ class token:
 		# Relax
 		self.relaxing = False
 		self.relaxAnnounce = False
+  
+		self.relaxing2 = False
+		self.relaxing2Announce = False
 
 		# Generate/set token
 		if token_ is not None:
@@ -121,7 +117,14 @@ class token:
 			self._bufferLock.acquire()
 
 			# Never enqueue for IRC clients or Bot
-			if self.irc or self.userID < 999:
+			#if self.irc or self.userID < 999:
+			if self.userID == 1001:
+				self.irc = False
+				self.country = 111
+				self.actionID = actions.WATCHING
+				self.actionText = "the chat"
+
+			if self.irc or self.userID == 999:
 				return
 
 			# Avoid memory leaks
@@ -390,6 +393,22 @@ class token:
 		# Logout event
 		logoutEvent.handle(self, deleteToken=self.irc)
 
+	def silentKick(self, reason="kick"):
+		"""
+		Kick this user from the server
+
+		:param message: Notification message to send to this user.
+						Default: "You have been kicked from the server. Please login again."
+		:param reason: Kick reason, used in logs. Default: "kick"
+		:return:
+		"""
+		# Send packet to target
+		log.info("{} has been disconnected. (silent {})".format(self.username, reason))
+		self.enqueue(serverPackets.loginFailed())
+
+		# Logout event
+		logoutEvent.handle(self, deleteToken=self.irc)
+
 	def silence(self, seconds = None, reason = "", author = 999):
 		"""
 		Silences this user (db, packet and token)
@@ -455,8 +474,14 @@ class token:
 		"""
 		stats = userUtils.getUserStats(self.userID, self.gameMode)
 		stats_relax = userUtils.getUserStatsRx(self.userID, self.gameMode)
+		stats_relax2 = userUtils.getUserStatsRx2(self.userID, self.gameMode)
 		log.debug(str(stats))
 		
+		if self.userID == 1001:
+			self.irc = False
+			self.country = 111
+			self.actionID = actions.WATCHING
+			self.actionText = "the chat"
 		if stats is None:
 			log.warning("Stats query returned None")
 			return
@@ -467,6 +492,13 @@ class token:
 			self.accuracy = stats_relax["accuracy"]/100
 			self.playcount = stats_relax["playcount"]
 			self.totalScore = stats_relax["totalScore"]
+		elif self.relaxing2:
+			self.gameRank = stats_relax2["gameRank"]
+			self.pp = stats_relax2["pp"]
+			self.rankedScore = stats_relax2["rankedScore"]
+			self.accuracy = stats_relax2["accuracy"]/100
+			self.playcount = stats_relax2["playcount"]
+			self.totalScore = stats_relax2["totalScore"]
 		else:
 			self.gameRank = stats["gameRank"]
 			self.pp = stats["pp"]

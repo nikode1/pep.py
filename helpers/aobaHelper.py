@@ -15,6 +15,16 @@ def getOsuVer(userID):
 	"""
 	return glob.db.fetch("SELECT osuver FROM users WHERE id = %s LIMIT 1", [userID])["osuver"]
 
+def getAlwaysOnline(userID):
+	"""
+	:param userID: user id
+	:return: osu! version
+	"""
+	if glob.db.fetch("SELECT always_online FROM users WHERE id = %s LIMIT 1", [userID])["always_online"] == 1:
+		return True
+	else:
+		return False
+
 class Webhook:
 	def __init__(self, url, **kwargs):
 
@@ -25,6 +35,8 @@ class Webhook:
 		"""
 
 		self.url = url 
+		self.username = kwargs.get('username')
+		self.avatar_url = kwargs.get('avatar_url')
 		self.msg = kwargs.get('msg')
 		self.color = kwargs.get('color')
 		self.title = kwargs.get('title')
@@ -84,6 +96,14 @@ class Webhook:
 		else:
 			self.ts = str(datetime.datetime.utcfromtimestamp(ts))
 
+	def set_username(self,**kwargs):
+		self.username = kwargs.get('username')
+
+	def set_avatar(self,**kwargs):
+		self.avatar_url = kwargs.get('avatar_url')
+
+	def set_msg(self,**kwargs):
+		self.msg = kwargs.get('msg')
 
 	def del_field(self, index):
 		self.fields.pop(index)
@@ -98,6 +118,8 @@ class Webhook:
 
 		data["embeds"] = []
 		embed = defaultdict(dict)
+		if self.username: data["username"] = self.username
+		if self.avatar_url: data["avatar_url"] = self.avatar_url
 		if self.msg: data["content"] = self.msg
 		if self.author: embed["author"]["name"] = self.author
 		if self.author_icon: embed["author"]["icon_url"] = self.author_icon

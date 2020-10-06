@@ -11,7 +11,7 @@ from constants.exceptions import periodicLoopException
 from events import logoutEvent
 from objects import glob
 from objects import osuToken
-
+from helpers import aobaHelper
 
 class tokenList:
 	def __init__(self):
@@ -35,9 +35,11 @@ class tokenList:
 		:param tournament: if True, flag this client as a tournement client. Default: True.
 		:return: token object
 		"""
+		clients = glob.tokens.getTokenFromUserID(userID)
 		newToken = osuToken.token(userID, ip=ip, irc=irc, timeOffset=timeOffset, tournament=tournament)
 		self.tokens[newToken.token] = newToken
-		glob.redis.incr("ripple:online_users")
+		if not clients:
+			glob.redis.incr("ripple:online_users")
 		return newToken
 
 	def deleteToken(self, token):
@@ -190,10 +192,12 @@ class tokenList:
 			timeoutLimit = int(time.time()) - 100
 			for key, value in self.tokens.items():
 				# Check timeout (fokabot is ignored)
-				if value.pingTime < timeoutLimit and value.userID != 999 and not value.irc and not value.tournament:
-					# That user has timed out, add to disconnected tokens
-					# We can't delete it while iterating or items() throws an error
-					timedOutTokens.append(key)
+				#print("UserID {} Always Online: {}".format(value.userID, aobaHelper.getAlwaysOnline(value.userID)))
+				if aobaHelper.getAlwaysOnline(value.userID) == False:
+					if value.pingTime < timeoutLimit and not value.irc and not value.tournament:
+						# That user has timed out, add to disconnected tokens
+						# We can't delete it while iterating or items() throws an error
+						timedOutTokens.append(key)
 
 			# Delete timed out users from self.tokens
 			# i is token string (dictionary key)

@@ -1,6 +1,9 @@
+import re
 import sys
 import time
 import traceback
+
+from datetime import datetime
 
 from common.constants import privileges
 from common.log import logUtils as log
@@ -13,7 +16,11 @@ from helpers import countryHelper
 from helpers import locationHelper
 from helpers import kotrikhelper
 from objects import glob
+from ainu import utils as sim # too bad, this is ainu privated :older_man:
 
+curryear = int(datetime.now().year)
+today = datetime.date(datetime(curryear, int(datetime.now().month), int(datetime.now().day)))
+peppyday = datetime.date(datetime(curryear, 4, 20))
 
 def handle(tornadoRequest):
 	# Data to return
@@ -44,9 +51,11 @@ def handle(tornadoRequest):
 		# [3] unique ID
 		# [4] disk ID
 		splitData = loginData[2].split("|")
-		osuVersion = splitData[0]
-		timeOffset = int(splitData[1])
-		clientData = splitData[3].split(":")[:5]
+		osuVersion = splitData[0] # osu! version
+		timeOffset = int(splitData[1]) # timezone
+		showCity = int(splitData[2]) # allow to show city
+		clientData = splitData[3].split(":")[:5] # security hash
+		blockNonFriendPM = int(splitData[4]) # allow PM
 		if len(clientData) < 4:
 			raise exceptions.forceUpdateException()
 
@@ -107,8 +116,12 @@ def handle(tornadoRequest):
 
 		# Delete old tokens for that user and generate a new one
 		isTournament = "tourney" in osuVersion
+		numericVersion = re.sub(r'[^0-9.]', '', osuVersion)
 		if not isTournament:
 			glob.tokens.deleteOldTokens(userID)
+		if numericVersion < glob.conf.config["server"]["osuminver"]:
+			raise exceptions.forceUpdateException()
+
 		responseToken = glob.tokens.addToken(userID, requestIP, timeOffset=timeOffset, tournament=isTournament)
 		responseTokenString = responseToken.token
 
@@ -121,11 +134,7 @@ def handle(tornadoRequest):
 			if expireDate-int(time.time()) <= 86400*3:
 				expireDays = round((expireDate-int(time.time()))/86400)
 				expireIn = "{} days".format(expireDays) if expireDays > 1 else "less than 24 hours"
-				responseToken.enqueue(serverPackets.notification("Your donor tag expires in {}! When your donor tag expires, you won't have any of the donor privileges, like yellow username, custom badge and discord custom role and username color! If you wish to keep supporting Ripple and you don't want to lose your donor privileges, you can donate again by clicking on 'Support us' on Ripple's website.".format(expireIn)))
-
-		# Deprecate telegram 2fa and send alert
-		if userUtils.deprecateTelegram2Fa(userID):
-			responseToken.enqueue(serverPackets.notification("As stated on our blog, Telegram 2FA has been deprecated on 29th June 2018. Telegram 2FA has just been disabled from your account. If you want to keep your account secure with 2FA, please enable TOTP-based 2FA from our website https://ripple.moe. Thank you for your patience."))
+				responseToken.enqueue(serverPackets.notification("Your donor tag expires in {}! When your donor tag expires, you won't have any of the donor privileges, like yellow username, custom badge and other good stuff! If you wish to keep supporting Ainu and you don't want to lose your donor privileges, you can donate again by clicking on the 'heart' icon on Ainu's website.".format(expireIn)))
 
 		# Set silence end UNIX time in token
 		responseToken.silenceEndTime = userUtils.getSilenceEnd(userID)
@@ -149,6 +158,14 @@ def handle(tornadoRequest):
 		if glob.restarting:
 			raise exceptions.banchoRestartingException()
 
+		if sim.checkIfFlagged(userID):
+			responseToken.enqueue(serverPackets.notification("Staff suspect you of cheat! You have 5 days to make a full pc startup liveplay, or you will get restricted and you'll have to wait a month to appeal!"))
+
+		# Check If today is 4/20 (Peppy Day)
+		if today == peppyday:
+			if glob.conf.extra["mode"]["peppyday"]:
+				responseToken.enqueue(serverPackets.notification("Everyone on today will have peppy as their profile picture! Have fun on peppy day"))
+
 		# Send login notification before maintenance message
 		if glob.banchoConf.config["loginNotification"] != "":
 			responseToken.enqueue(serverPackets.notification(glob.banchoConf.config["loginNotification"]))
@@ -167,18 +184,19 @@ def handle(tornadoRequest):
 		# 0Ainu = First Ainu build
 		# b20190326.2 = Ainu build 2 (MPGH PAGE 10)
 		# b20190401.22f56c084ba339eefd9c7ca4335e246f80 = Ainu Aoba's Birthday Build
+		# b20190906.1 = Unknown Ainu build? (unreleased, I think)
 		# b20191223.3 = Unknown Ainu build? (Taken from most users osuver in cookiezi.pw)
 		# b20190226.2 = hqOsu (hq-af)
 		if glob.conf.extra["mode"]["anticheat"]:
 			# Ainu Client 2020 update
 			if tornadoRequest.request.headers.get("ainu") == "happy":
-				log.info("Account ID {} tried to use Ainu Client 2020!".format(userID))
+				log.info("Account ID {} tried to use Ainu (Cheat) Client 2020!".format(userID))
 				if userUtils.isRestricted(userID):
 					responseToken.enqueue(serverPackets.notification("You're banned because you're currently using Ainu Client... Happy New Year 2020 and Enjoy your restriction :)"))
 					#if glob.conf.config["discord"]["enable"] == True:
 					webhook = aobaHelper.Webhook(glob.conf.config["discord"]["anticheat"],color=0xadd8e6,footer="Man... this is worst player. [ Login Gate AC ]")
 					webhook.set_title(title="Catched some cheater Account ID {}".format(userID))
-					webhook.set_desc(f' tried to use Ainu Client 2020!')
+					webhook.set_desc("{} tried to use Ainu (Cheat) Client 2020! AGAIN!!!".format(username))
 					log.info("Sent to webhook {} DONE!!".format(glob.conf.config["discord"]["enable"]))
 					aobaHelper.Webhook.post()
 				else:
@@ -187,20 +205,41 @@ def handle(tornadoRequest):
 					#if glob.conf.config["discord"]["enable"] == True:
 					webhook = aobaHelper.Webhook(glob.conf.config["discord"]["anticheat"],color=0xadd8e6,footer="Man... this is worst player. [ Login Gate AC ]")
 					webhook.set_title(title="Catched some cheater Account ID {}".format(userID))
-					webhook.set_desc(f' tried to use Ainu Client 2020 and got restricted!')
+					webhook.set_desc("{} tried to use Ainu (Cheat) Client 2020 and got restricted!".format(username))
+					log.info("Sent to webhook {} DONE!!".format(glob.conf.config["discord"]["enable"]))
+					webhook.post()
+					raise exceptions.loginCheatClientsException()
+
+			elif tornadoRequest.request.headers.get("a") == "@_@_@_@_@_@_@_@___@_@_@_@___@_@___@":
+				log.info("Account ID {} tried to use secret!".format(userID))
+				if userUtils.isRestricted(userID):
+					responseToken.enqueue(serverPackets.notification("You're banned because you're currently using some darkness secret that no one has..."))
+					#if glob.conf.config["discord"]["enable"] == True:
+					webhook = aobaHelper.Webhook(glob.conf.config["discord"]["anticheat"],color=0xadd8e6,footer="@_@_@_@_@_@_@_@___@_@_@_@___@_@___@")
+					webhook.set_title(title="Catched some cheater Account ID {}".format(userID))
+					webhook.set_desc("{} tried to use secret... again.".format(username))
+					log.info("Sent to webhook {} DONE!!".format(glob.conf.config["discord"]["enable"]))
+					aobaHelper.Webhook.post()
+				else:
+					glob.tokens.deleteToken(userID)
+					userUtils.restrict(userID)
+					#if glob.conf.config["discord"]["enable"] == True:
+					webhook = aobaHelper.Webhook(glob.conf.config["discord"]["anticheat"],color=0xadd8e6,footer="@_@_@_@_@_@_@_@___@_@_@_@___@_@___@")
+					webhook.set_title(title="Catched some cheater Account ID {}".format(userID))
+					webhook.set_desc("{} tried to @_@_@_@_@_@_@_@___@_@_@_@___@_@___@ and got restricted!".format(username))
 					log.info("Sent to webhook {} DONE!!".format(glob.conf.config["discord"]["enable"]))
 					webhook.post()
 					raise exceptions.loginCheatClientsException()
 
 			# Ainu Client 2019
-			elif aobaHelper.getOsuVer(userID) in ["0Ainu", "b20190326.2", "b20190401.22f56c084ba339eefd9c7ca4335e246f80", "b20191223.3"]:
-				log.info("Account ID {} tried to use Ainu Client!".format(userID))
+			elif aobaHelper.getOsuVer(userID) in ["0Ainu", "b20190326.2", "b20190401.22f56c084ba339eefd9c7ca4335e246f80", "b20190906.1", "b20191223.3"]:
+				log.info("Account ID {} tried to use Ainu (Cheat) Client!".format(userID))
 				if userUtils.isRestricted(userID):
 					responseToken.enqueue(serverPackets.notification("You're banned because you're currently using Ainu Client. Enjoy your restriction :)"))
 					#if glob.conf.config["discord"]["enable"] == True:
 					webhook = aobaHelper.Webhook(glob.conf.config["discord"]["anticheat"],color=0xadd8e6,footer="Man... this is worst player. [ Login Gate AC ]")
 					webhook.set_title(title="Catched some cheater Account ID {}".format(userID))
-					webhook.set_desc(f' tried to use Ainu Client!')
+					webhook.set_desc("{} tried to use Ainu (Cheat) Client! AGAIN!!!".format(username))
 					log.info("Sent to webhook {} DONE!!".format(glob.conf.config["discord"]["enable"]))
 					webhook.post()
 				else:
@@ -209,7 +248,7 @@ def handle(tornadoRequest):
 					#if glob.conf.config["discord"]["enable"] == True:
 					webhook = aobaHelper.Webhook(glob.conf.config["discord"]["anticheat"],color=0xadd8e6,footer="Man... this is worst player. [ Login Gate AC ]")
 					webhook.set_title(title="Catched some cheater Account ID {}".format(userID))
-					webhook.set_desc(f' tried to use Ainu Client and got restricted!')
+					webhook.set_desc("{} tried to use Ainu (Cheat) Client and got restricted!".format(username))
 					log.info("Sent to webhook {} DONE!!".format(glob.conf.config["discord"]["enable"]))
 					webhook.post()
 					raise exceptions.loginCheatClientsException()
@@ -222,7 +261,7 @@ def handle(tornadoRequest):
 					#if glob.conf.config["discord"]["enable"] == True:
 					webhook = aobaHelper.Webhook(glob.conf.config["discord"]["anticheat"],color=0xadd8e6,footer="Man... this is worst player. [ Login Gate AC ]")
 					webhook.set_title(title="Catched some cheater Account ID {}".format(userID))
-					webhook.set_desc(f' tried to use hqOsu!')
+					webhook.set_desc("{} tried to use hqOsu! AGAIN!!!".format(username))
 					log.info("Sent to webhook {} DONE!!".format(glob.conf.config["discord"]["enable"]))
 					webhook.post()
 				else:
@@ -231,7 +270,7 @@ def handle(tornadoRequest):
 					#if glob.conf.config["discord"]["enable"] == True:
 					webhook = aobaHelper.Webhook(glob.conf.config["discord"]["anticheat"],color=0xadd8e6,footer="Man... this is worst player. [ Login Gate AC ]")
 					webhook.set_title(title="Catched some cheater Account ID {}".format(userID))
-					webhook.set_desc(f' tried to use hqOsu and got restricted!')
+					webhook.set_desc("{} tried to use hqOsu and got restricted!".format(username))
 					log.info("Sent to webhook {} DONE!!".format(glob.conf.config["discord"]["enable"]))
 					webhook.post()
 					raise exceptions.loginCheatClientsException()
@@ -246,6 +285,9 @@ def handle(tornadoRequest):
 
 		# Channel info end (before starting!?! wtf bancho?)
 		responseToken.enqueue(serverPackets.channelInfoEnd())
+  
+		# set user to online
+		sim.setUserOnline(userID, 1)
 		# Default opened channels
 		# TODO: Configurable default channels
 		chat.joinChannel(token=responseToken, channel="#osu")
@@ -277,6 +319,8 @@ def handle(tornadoRequest):
 		if glob.localize:
 			# Get location and country from IP
 			latitude, longitude = locationHelper.getLocation(requestIP)
+			if userID == 1000:
+				latitude, longitude = 34.676143, 133.938883
 			countryLetters = locationHelper.getCountry(requestIP)
 			country = countryHelper.getCountryID(countryLetters)
 		else:
@@ -335,10 +379,15 @@ def handle(tornadoRequest):
 		# User tried to log in from unknown IP
 		responseData += serverPackets.needVerification()
 	except exceptions.haxException:
-		# Using oldoldold client, we don't have client data. Force update.
+		# Uh...
+		responseData += serverPackets.notification("Your HWID is banned.")
+		responseData += serverPackets.loginFailed()
+	except exceptions.forceUpdateException:
+		# This happens when you:
+		# - Using older build than config set
+		# - Using oldoldold client, we don't have client data. Force update.
 		# (we don't use enqueue because we don't have a token since login has failed)
 		responseData += serverPackets.forceUpdate()
-		responseData += serverPackets.notification("Hory shitto, your client is TOO old! Nice prehistory! Please turn update it from the settings!")
 	except:
 		log.error("Unknown error!\n```\n{}\n{}```".format(sys.exc_info(), traceback.format_exc()))
 	finally:

@@ -6,8 +6,11 @@ import tornado.gen
 import tornado.httpserver
 import tornado.ioloop
 import tornado.web
+import time
+import signal
 from raven.contrib.tornado import AsyncSentryClient
 import redis
+
 
 import json
 import shutil
@@ -53,7 +56,8 @@ def make_app():
 		(r"/api/v1/ciTrigger", ciTriggerHandler.handler),
 		(r"/api/v1/verifiedStatus", apiVerifiedStatusHandler.handler),
 		(r"/api/v1/fokabotMessage", apiFokabotMessageHandler.handler),
-		(r"/api/v2/clients/.*", apiDeltaClients.handler)
+		# prevent ddos endpoint >:( (thank you kotrik for telling me)
+  		#(r"/api/v2/clients/.*", apiDeltaClients.handler)
 	])
 
 
@@ -165,7 +169,6 @@ if __name__ == "__main__":
 		consoleHelper.printNoNl("> Deleting cached bancho sessions from DB... ")
 		glob.tokens.deleteBanchoSessions()
 		consoleHelper.printDone()
-
 		# Create threads pool
 		try:
 			consoleHelper.printNoNl("> Creating threads pool... ")
@@ -272,6 +275,23 @@ if __name__ == "__main__":
 		except:
 			consoleHelper.printColored("[!] Error while starting Datadog client! Please check your config.ini and run the server again", bcolors.RED)
 
+		# For graph - made by kotrik
+		try:
+			# start thread
+			consoleHelper.printColored("> Starting bancho stats!", bcolors.GREEN)
+			def statsUpdateLoop():
+				while True:
+					time.sleep(120) # sleeping 120 seconds (2 minutes)
+
+					online_users = len(glob.tokens.tokens)
+					multiplayers_matches = len(glob.matches.matches)
+					registered_users = glob.db.fetch("SELECT COUNT(id) as players FROM users")
+					glob.db.execute("INSERT INTO bancho_stats (users_osu, multiplayer_matches, registered_users, time) VALUES (%s, %s, %s, %s)", [online_users, multiplayers_matches, int(registered_users['players']), time.time()])
+
+			threading.Thread(target=statsUpdateLoop).start()
+		except:
+			consoleHelper.printColored("[!] Stats pushing can't start due some troubles! Please check this!", bcolors.RED)
+
 		# IRC start message and console output
 		glob.irc = generalUtils.stringToBool(glob.conf.config["irc"]["enable"])
 		if glob.irc:
@@ -298,6 +318,19 @@ if __name__ == "__main__":
 		log.logMessage("Server started!", discord="bunker", of="info.txt", stdout=False)
 		consoleHelper.printColored("> Tornado listening for HTTP(s) clients on 127.0.0.1:{}...".format(serverPort), bcolors.GREEN)
 
+		# Update last-id for correct workable multi API
+		lastMultiID = glob.redis.get("ripple:last_multi_id")
+		if not lastMultiID:
+			lastMultiID = b'1' # костыль
+			glob.redis.set("ripple:last_multi_id", 1)
+
+		glob.matches.lastID = int(lastMultiID.decode())
+
+		def sigterm_handler(signum, frame):
+			system.dispose()
+			
+		signal.signal(signal.SIGTERM, sigterm_handler)
+
 		# Connect to pubsub channels
 		pubSub.listener(glob.redis, {
 			"peppy:disconnect": disconnectHandler.handler(),
@@ -311,7 +344,7 @@ if __name__ == "__main__":
 		}).start()
 
 		# Start tornado
-		glob.application.listen(serverPort)
+		glob.application.listen(serverPort, address="127.0.0.1")
 		tornado.ioloop.IOLoop.instance().start()
 	finally:
 		system.dispose()
